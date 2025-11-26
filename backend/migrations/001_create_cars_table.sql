@@ -1,0 +1,20 @@
+-- Création de la table cars si elle n'existe pas
+CREATE TABLE IF NOT EXISTS cars (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  year INT NOT NULL,
+  make VARCHAR(100) NOT NULL,
+  model VARCHAR(100) NOT NULL,
+  series VARCHAR(100) NOT NULL,
+  mileage INT NOT NULL,
+  location_city VARCHAR(100) NOT NULL,
+  location_branch VARCHAR(100) NOT NULL,
+  sale_price DECIMAL(10, 2) NOT NULL,
+  stock_number VARCHAR(50) NOT NULL UNIQUE,
+  vin VARCHAR(17) NOT NULL UNIQUE,
+  transmission VARCHAR(50) NOT NULL,
+  fuel_type VARCHAR(50) NOT NULL,
+  cylinders INT NOT NULL,
+  photos JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
