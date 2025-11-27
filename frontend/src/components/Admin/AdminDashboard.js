@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -19,7 +20,12 @@ import {
   Alert,
   Skeleton,
   alpha,
-  useTheme
+  useTheme,
+  TablePagination,
+  TableFooter,
+  TablePaginationProps,
+  TablePaginationActionsProps,
+  IconButtonProps
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
@@ -29,7 +35,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import api from '../../api/api.js';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import carApi from '../../api/carApi';
 import ConfirmationModal from '../Common/ConfirmationModal';
 
 const DashboardCard = styled(Paper)(({ theme }) => ({
@@ -44,32 +54,113 @@ const DashboardCard = styled(Paper)(({ theme }) => ({
     : '0px 8px 24px rgba(0, 0, 0, 0.3)',
 }));
 
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
+
 function AdminDashboard() {
   const [cars, setCars] = useState([]);
   const [searchName, setSearchName] = useState('');
   const [searchVin, setSearchVin] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [carToDeleteId, setCarToDeleteId] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 0,
+    rowsPerPage: 10,
+    total: 0,
+    totalPages: 0
+  });
+  
   const navigate = useNavigate();
   const theme = useTheme();
 
-  async function fetchCars(filters = {}) {
+  const fetchCars = useCallback(async (filters = {}, page = 0, rowsPerPage = 10) => {
     try {
       setLoading(true);
       const params = {};
+      
       if (filters.name) params.name = filters.name;
       if (filters.vin) params.vin = filters.vin;
+      if (filters.location) params.location = filters.location;
 
-      const response = await api.get('/cars', { params });
+      const response = await carApi.getCars(params, page + 1, rowsPerPage);
+      
       setCars(response.data);
+      setPagination(prev => ({
+        ...prev,
+        total: response.pagination.total,
+        totalPages: response.pagination.totalPages,
+        page,
+        rowsPerPage
+      }));
+      
     } catch (err) {
+      console.error('Error fetching cars:', err);
       setError('Erreur lors du chargement des voitures.');
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchCars();
@@ -77,12 +168,44 @@ function AdminDashboard() {
 
   function handleSearch(e) {
     e.preventDefault();
-    fetchCars({ name: searchName.trim(), vin: searchVin.trim() });
+    fetchCars(
+      { 
+        name: searchName.trim(), 
+        vin: searchVin.trim(),
+        location: searchLocation.trim() 
+      }, 
+      0, 
+      pagination.rowsPerPage
+    );
   }
 
   const handleDeleteClick = (id) => {
     setCarToDeleteId(id);
     setDeleteModalOpen(true);
+  };
+  
+  const handleChangePage = (event, newPage) => {
+    fetchCars(
+      { name: searchName.trim(), vin: searchVin.trim() },
+      newPage,
+      pagination.rowsPerPage
+    );
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    fetchCars(
+      { name: searchName.trim(), vin: searchVin.trim() },
+      0,
+      newRowsPerPage
+    );
+  };
+  
+  const handleRefresh = () => {
+    setSearchName('');
+    setSearchVin('');
+    setSearchLocation('');
+    fetchCars({}, 0, pagination.rowsPerPage);
   };
 
   const handleConfirmDelete = async () => {
@@ -164,7 +287,7 @@ function AdminDashboard() {
 
           <Chip
             icon={<DirectionsCarIcon />}
-            label={`${cars.length} véhicule${cars.length > 1 ? 's' : ''}`}
+            label={`${pagination.total} véhicule${pagination.total > 1 ? 's' : ''}`}
             color="primary"
             sx={{ fontWeight: 600, px: 2, py: 2.5 }}
           />
@@ -183,17 +306,24 @@ function AdminDashboard() {
               InputProps={{
                 startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                },
-              }}
             />
             <TextField
               fullWidth
               placeholder="Recherche par VIN..."
               value={searchVin}
               onChange={(e) => setSearchVin(e.target.value)}
+              InputProps={{
+                startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+              }}
+            />
+            <TextField
+              fullWidth
+              placeholder="Recherche par localisation..."
+              value={searchLocation}
+              onChange={(e) => setSearchLocation(e.target.value)}
+              InputProps={{
+                startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+              }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 3,
@@ -205,7 +335,7 @@ function AdminDashboard() {
               variant="contained"
               sx={{
                 borderRadius: 3,
-                px: 4,
+                px: 6,
                 whiteSpace: 'nowrap',
                 textTransform: 'none',
                 fontWeight: 600,
@@ -214,16 +344,13 @@ function AdminDashboard() {
               Rechercher
             </Button>
             <IconButton
-              onClick={() => {
-                setSearchName('');
-                setSearchVin('');
-                fetchCars();
-              }}
+              onClick={handleRefresh}
               sx={{
                 borderRadius: 3,
                 border: 1,
                 borderColor: 'divider',
               }}
+              title="Rafraîchir"
             >
               <RefreshIcon />
             </IconButton>
@@ -239,7 +366,7 @@ function AdminDashboard() {
       )}
 
       {/* Cars Table */}
-      {cars.length === 0 ? (
+      {!loading && cars.length === 0 ? (
         <DashboardCard sx={{ p: 8, textAlign: 'center' }}>
           <DirectionsCarIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary">
@@ -345,25 +472,18 @@ function AdminDashboard() {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={
-                            isAvailable ? 'Disponible' :
-                              isSold ? 'Vendu' :
-                                car.availability || 'N/A'
-                          }
+                          label={car.status === 'actif' ? 'Actif' : 'Inactif'}
                           size="small"
                           sx={{
-                            backgroundColor: isAvailable
+                            backgroundColor: car.status === 'actif'
                               ? alpha(theme.palette.success.main, 0.15)
-                              : isSold
-                                ? alpha(theme.palette.error.main, 0.15)
-                                : alpha(theme.palette.warning.main, 0.15),
-                            color: isAvailable
+                              : alpha(theme.palette.warning.main, 0.15),
+                            color: car.status === 'actif'
                               ? 'success.main'
-                              : isSold
-                                ? 'error.main'
-                                : 'warning.main',
+                              : 'warning.main',
                             fontWeight: 700,
                             borderRadius: 2,
+                            textTransform: 'capitalize'
                           }}
                         />
                       </TableCell>
@@ -414,6 +534,30 @@ function AdminDashboard() {
                   );
                 })}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    colSpan={9}
+                    count={pagination.total}
+                    rowsPerPage={pagination.rowsPerPage}
+                    page={pagination.page}
+                    SelectProps={{
+                      inputProps: {
+                        'aria-label': 'lignes par page',
+                      },
+                      native: true,
+                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                    labelRowsPerPage="Lignes par page:"
+                    labelDisplayedRows={({ from, to, count }) =>
+                      `${from}-${to} sur ${count !== -1 ? count : `plus de ${to}`}`
+                    }
+                  />
+                </TableRow>
+              </TableFooter>
             </Table>
           </TableContainer>
         </DashboardCard>

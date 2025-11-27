@@ -110,9 +110,9 @@ const FilterBar = styled(Paper)(({ theme }) => ({
   boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
 }));
 
-// === Card Styles ===
+// === Card Styles - Hauteur uniforme ===
 const CarCard = styled(Card)(({ theme }) => ({
-  height: '100%',
+  height: '100%', // Crucial pour que la carte prenne toute la hauteur de l'élément Grid.
   display: 'flex',
   flexDirection: 'column',
   borderRadius: 16,
@@ -121,6 +121,8 @@ const CarCard = styled(Card)(({ theme }) => ({
   boxShadow: '0 8px 30px -8px rgba(0, 0, 0, 0.12)',
   border: `1px solid ${alpha(theme.palette.divider, 0.06)}`,
   background: theme.palette.background.paper,
+
+
   '&:hover': {
     transform: 'translateY(-8px) scale(1.01)',
     boxShadow: '0 20px 40px -8px rgba(255, 107, 53, 0.2)',
@@ -141,11 +143,15 @@ const CarCard = styled(Card)(({ theme }) => ({
   }
 }));
 
+// === Hauteur d'image strictement fixe ===
 const CarImage = styled(CardMedia)({
-  height: 240,
+  height: '220px !important',
+  minHeight: '220px !important',
+  maxHeight: '220px !important',
   width: '100%',
   objectFit: 'cover',
   transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+  flexShrink: 0,
 });
 
 const PriceBadge = styled(Box)({
@@ -185,12 +191,14 @@ const SpecBadge = styled(Box)(({ theme }) => ({
 
 // === Options de filtre ===
 const FILTER_OPTIONS = {
-  make: ['Toutes', 'Peugeot', 'Renault', 'Volkswagen', 'BMW', 'Audi', 'Mercedes', 'Toyota', 'Citroën'],
+  make: ['Toutes', 'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Peugeot', 'Renault'],
+  location: ['Toutes', 'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Bordeaux', 'Lille', 'Nantes', 'Strasbourg', 'Nice'],
   sortBy: [
     { value: 'price-asc', label: 'Prix croissant' },
     { value: 'price-desc', label: 'Prix décroissant' },
-    { value: 'year-desc', label: 'Plus récent' },
-    { value: 'mileage-asc', label: 'Faible kilométrage' },
+    { value: 'year-desc', label: 'Récentes d\'abord' },
+    { value: 'year-asc', label: 'Anciennes d\'abord' },
+    { value: 'mileage-asc', label: 'Kilométrage croissant' },
   ],
 };
 
@@ -199,12 +207,17 @@ function HomePage() {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     make: 'Toutes',
+    location: 'Toutes',
     priceRange: [0, 1000000],
     sortBy: 'price-asc',
     searchQuery: '',
+  });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 100,
+    total: 0
   });
 
   const [priceAnchorEl, setPriceAnchorEl] = useState(null);
@@ -217,23 +230,40 @@ function HomePage() {
     const fetchCars = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/cars');
-        setCars(response.data);
+        const response = await api.get('/cars', {
+          params: {
+            page: pagination.page,
+            limit: pagination.limit
+          }
+        });
+        setCars(response.data.data || []);
+        setPagination(prev => ({
+          ...prev,
+          total: response.data.pagination?.total || 0
+        }));
       } catch (err) {
+        console.error('Error fetching cars:', err);
         setError('Impossible de charger les véhicules. Veuillez réessayer.');
+        setCars([]);
       } finally {
         setLoading(false);
       }
     };
     fetchCars();
-  }, []);
+  }, [pagination.page, pagination.limit]);
 
   // Filtrage des voitures
   const filteredCars = useMemo(() => {
+    if (!cars || !Array.isArray(cars)) return [];
+
     let result = [...cars];
 
     if (filters.make && filters.make !== 'Toutes') {
       result = result.filter(car => car.make === filters.make);
+    }
+
+    if (filters.location && filters.location !== 'Toutes') {
+      result = result.filter(car => car.location === filters.location);
     }
 
     result = result.filter(
@@ -261,15 +291,15 @@ function HomePage() {
   // Pagination
   const pageCount = Math.ceil(filteredCars.length / CARS_PER_PAGE);
   const paginatedCars = useMemo(() => {
-    const startIndex = (page - 1) * CARS_PER_PAGE;
+    const startIndex = (pagination.page - 1) * CARS_PER_PAGE;
     return filteredCars.slice(startIndex, startIndex + CARS_PER_PAGE);
-  }, [filteredCars, page]);
+  }, [filteredCars, pagination.page]);
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat('fr-FR', { 
-      style: 'currency', 
-      currency: 'EUR', 
-      maximumFractionDigits: 0 
+    new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0
     }).format(price);
 
   const handlePriceChange = (event, newValue) => {
@@ -279,11 +309,15 @@ function HomePage() {
   const clearFilters = () => {
     setFilters({
       make: 'Toutes',
+      location: 'Toutes',
       priceRange: [0, 1000000],
       sortBy: 'price-asc',
       searchQuery: '',
     });
-    setPage(1);
+    setPagination(prev => ({
+      ...prev,
+      page: 1
+    }));
   };
 
   // Loading State
@@ -293,7 +327,7 @@ function HomePage() {
         <Skeleton variant="rectangular" height={600} sx={{ width: '100%', mb: 4 }} />
         <Container maxWidth="xl">
           <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 6, mb: 6 }} />
-          <Grid container spacing={3}>
+          <Grid container spacing={3} alignItems="stretch">
             {[...Array(9)].map((_, i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
                 <Skeleton variant="rectangular" height={480} sx={{ borderRadius: 4 }} />
@@ -312,9 +346,9 @@ function HomePage() {
         <Alert severity="error" variant="filled" sx={{ borderRadius: 4 }}>
           {error}
         </Alert>
-        <Button 
-          variant="contained" 
-          onClick={() => window.location.reload()} 
+        <Button
+          variant="contained"
+          onClick={() => window.location.reload()}
           sx={{ mt: 3 }}
         >
           Réessayer
@@ -331,7 +365,7 @@ function HomePage() {
           <HeroSection>
             <Container maxWidth="lg">
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9 }}
                 style={{ textAlign: 'center' }}
@@ -391,8 +425,8 @@ function HomePage() {
         </Fade>
       </HeroWrapper>
 
-      {/* Content Section */}
-      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
+      {/* Content Section - Container pour marges équilibrées */}
+      <Container maxWidth="xl" sx={{ pt: 4, pb: 8 }}>
         {/* Filter Bar */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -414,9 +448,9 @@ function HomePage() {
                         <SearchIcon sx={{ color: COLORS.primary }} />
                       </InputAdornment>
                     ),
-                    sx: { 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx: {
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     },
                   }}
                   size="medium"
@@ -431,13 +465,33 @@ function HomePage() {
                     value={filters.make}
                     label="Marque"
                     onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
-                    sx={{ 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx={{
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     }}
                   >
                     {FILTER_OPTIONS.make.map(m => (
                       <MenuItem key={m} value={m}>{m}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Localisation */}
+              <Grid item xs={6} md={2}>
+                <FormControl fullWidth size="medium">
+                  <InputLabel>Localisation</InputLabel>
+                  <Select
+                    value={filters.location}
+                    label="Localisation"
+                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                    sx={{
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
+                    }}
+                  >
+                    {FILTER_OPTIONS.location.map(location => (
+                      <MenuItem key={location} value={location}>{location}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -451,12 +505,12 @@ function HomePage() {
                   onClick={(e) => setPriceAnchorEl(e.currentTarget)}
                   startIcon={<EuroIcon />}
                   endIcon={
-                    <Badge 
+                    <Badge
                       badgeContent={
                         filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000 ? '!' : 0
-                      } 
-                      color="primary" 
-                      variant="dot" 
+                      }
+                      color="primary"
+                      variant="dot"
                     />
                   }
                   sx={{
@@ -477,14 +531,14 @@ function HomePage() {
                   onClose={() => setPriceAnchorEl(null)}
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                  PaperProps={{ 
-                    sx: { 
-                      p: 3, 
-                      width: 320, 
-                      borderRadius: 4, 
-                      mt: 1, 
-                      boxShadow: theme.shadows[10] 
-                    } 
+                  PaperProps={{
+                    sx: {
+                      p: 3,
+                      width: 320,
+                      borderRadius: 4,
+                      mt: 1,
+                      boxShadow: theme.shadows[10]
+                    }
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={700} gutterBottom>
@@ -518,9 +572,9 @@ function HomePage() {
                         <SortIcon fontSize="small" />
                       </InputAdornment>
                     }
-                    sx={{ 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx={{
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     }}
                   >
                     {FILTER_OPTIONS.sortBy.map(option => (
@@ -537,11 +591,11 @@ function HomePage() {
                 <Button
                   color="error"
                   onClick={clearFilters}
-                  sx={{ 
-                    minWidth: 56, 
-                    height: 56, 
-                    borderRadius: 3, 
-                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}` 
+                  sx={{
+                    minWidth: 56,
+                    height: 56,
+                    borderRadius: 3,
+                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`
                   }}
                 >
                   <RestartAltIcon />
@@ -563,136 +617,152 @@ function HomePage() {
           </FilterBar>
         </motion.div>
 
-        {/* Grille de voitures - 3 colonnes fixes en desktop */}
-        <Box sx={{ width: '100%' }}>
-          <Grid container spacing={3}>
-            <AnimatePresence>
-              {paginatedCars.map((car, index) => {
-                const imageUrl = car.photos?.[0] || 
-                  `https://source.unsplash.com/random/800x600/?${car.make}+${car.model}`;
+        {/* Grille de voitures */}
+        <Grid container spacing={3} alignItems="stretch">
+          <AnimatePresence>
+            {paginatedCars.map((car, index) => {
+              const imageUrl = car.photos?.[0] ||
+                `https://source.unsplash.com/random/800x600/?${car.make}+${car.model}`;
 
-                return (
-                  <Grid item xs={12} sm={6} md={4} key={car.id}>
-                    <Zoom in timeout={300 + (index % 3) * 100}>
-                      <CarCard
-                        component={motion.div}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.4 }}
+              return (
+                <Grid item xs={12} sm={6} md={4} key={car.id}>
+                  <Zoom in timeout={300 + (index % 3) * 100}>
+                    <CarCard
+                      component={motion.div}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <Link
+                        to={`/cars/${car.id}`}
+                        style={{
+                          textDecoration: 'none',
+                          color: 'inherit',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%', // Assure que la carte prend toute la hauteur de l'élément Grid.
+                          flexGrow: 1 // Ajout crucial pour que le lien s'étire dans la CarCard
+                        }}
                       >
-                        <Link 
-                          to={`/cars/${car.id}`} 
-                          style={{ 
-                            textDecoration: 'none', 
-                            color: 'inherit',
+                        {/* Image */}
+                        <Box sx={{ position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+                          <CarImage
+                            className="car-image"
+                            image={imageUrl}
+                            title={`${car.make} ${car.model}`}
+                          />
+                          <PriceBadge className="price-badge">
+                            {formatPrice(car.price)}
+                          </PriceBadge>
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: '65%',
+                              background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+                              zIndex: 1,
+                            }}
+                          />
+                        </Box>
+
+                        {/* Contenu */}
+                        <CardContent
+                          sx={{
+                            flexGrow: 1,
+                            p: 2.5,
                             display: 'flex',
                             flexDirection: 'column',
-                            height: '100%'
+                            flex: 1,
+                            // *** Correction pour uniformité : Hauteur minimale forcée ***
+                            minHeight: 220, // Valeur estimée pour garantir l'espace pour le titre sur 2 lignes + 3 specs + bouton
                           }}
                         >
-                          {/* Image */}
-                          <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                            <CarImage 
-                              className="car-image"
-                              image={imageUrl} 
-                              title={`${car.make} ${car.model}`} 
-                            />
-                            <PriceBadge className="price-badge">
-                              {formatPrice(car.price)}
-                            </PriceBadge>
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                height: '65%',
-                                background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
-                                zIndex: 1,
-                              }}
-                            />
-                          </Box>
+                          {/* Titre */}
+                          <Typography
+                            variant="h6"
+                            fontWeight={800}
+                            sx={{
+                              lineHeight: 1.3,
+                              mb: 2,
+                              fontSize: '1.2rem',
+                              height: '3.2em', // 2 lignes de texte
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                            }}
+                          >
+                            {car.year} {car.make} {car.model}
+                          </Typography>
 
-                          {/* Contenu */}
-                          <CardContent sx={{ flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column' }}>
-                            {/* Titre */}
-                            <Typography
-                              variant="h6"
-                              fontWeight={800}
-                              sx={{
-                                lineHeight: 1.3,
-                                mb: 2,
-                                fontSize: '1.3rem',
-                                minHeight: '2.6em',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                              }}
-                            >
-                              {car.year} {car.make} {car.model}
-                            </Typography>
+                          <Divider sx={{ mb: 2, borderColor: alpha(theme.palette.divider, 0.1) }} />
 
-                            <Divider sx={{ mb: 2.5, borderColor: alpha(theme.palette.divider, 0.1) }} />
-
-                            {/* Specs */}
-                            <Grid container spacing={1.5} sx={{ mb: 3 }}>
-                              <Grid item xs={6}>
-                                <SpecBadge>
-                                  <SpeedIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                          {/* Specs */}
+                          <Grid container spacing={1.5} sx={{ mb: 2.5 }}>
+                            <Grid item xs={6}>
+                              <SpecBadge sx={{ justifyContent: 'center' }}>
+                                <SpeedIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                                <Typography variant="caption" fontWeight={600} noWrap>
                                   {car.mileage?.toLocaleString()} km
-                                </SpecBadge>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <SpecBadge>
-                                  <LocalGasStationIcon fontSize="small" sx={{ color: COLORS.primary }} />
-                                  {car.fuelType || 'Essence'}
-                                </SpecBadge>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <SpecBadge>
-                                  <SettingsSuggestIcon fontSize="small" sx={{ color: COLORS.primary }} />
-                                  {car.transmission || 'Auto'}
-                                </SpecBadge>
-                              </Grid>
+                                </Typography>
+                              </SpecBadge>
                             </Grid>
+                            <Grid item xs={6}>
+                              <SpecBadge sx={{ justifyContent: 'center' }}>
+                                <LocalGasStationIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                                <Typography variant="caption" fontWeight={600} noWrap>
+                                  {car.fuelType || 'Essence'}
+                                </Typography>
+                              </SpecBadge>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <SpecBadge sx={{ justifyContent: 'center' }}>
+                                <SettingsSuggestIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                                <Typography variant="caption" fontWeight={600} noWrap>
+                                  {car.transmission || 'Auto'}
+                                </Typography>
+                              </SpecBadge>
+                            </Grid>
+                          </Grid>
 
-                            {/* Button */}
-                            <Button
-                              className="view-btn"
-                              variant="outlined"
-                              fullWidth
-                              endIcon={<ArrowForwardIcon />}
-                              sx={{
-                                mt: 'auto',
-                                borderRadius: 3,
-                                textTransform: 'none',
-                                fontWeight: 700,
-                                py: 1.3,
+                          {/* Button */}
+                          <Button
+                            className="view-btn"
+                            variant="outlined"
+                            fullWidth
+                            endIcon={<ArrowForwardIcon />}
+                            sx={{
+                              mt: 'auto',
+                              borderRadius: 3,
+                              textTransform: 'none',
+                              fontWeight: 700,
+                              py: 1.2,
+                              fontSize: '0.95rem',
+                              borderWidth: 2,
+                              borderColor: alpha(COLORS.primary, 0.2),
+                              color: theme.palette.text.primary,
+                              transition: 'all 0.3s ease',
+                              '&:hover': {
                                 borderWidth: 2,
-                                borderColor: alpha(COLORS.primary, 0.2),
-                                color: theme.palette.text.primary,
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                  borderWidth: 2,
-                                  borderColor: 'transparent',
-                                },
-                              }}
-                            >
-                              Voir détails
-                            </Button>
-                          </CardContent>
-                        </Link>
-                      </CarCard>
-                    </Zoom>
-                  </Grid>
-                );
-              })}
-            </AnimatePresence>
-          </Grid>
-        </Box>
+                                borderColor: 'transparent',
+                              },
+                            }}
+                          >
+                            Voir détails
+                          </Button>
+                        </CardContent>
+                      </Link>
+                    </CarCard>
+                  </Zoom>
+                </Grid>
+              );
+            })}
+          </AnimatePresence>
+        </Grid>
 
         {/* Pagination */}
         {pageCount > 1 && (
@@ -727,10 +797,10 @@ function HomePage() {
             <Typography color="text.secondary" mb={4} fontSize="1.1rem">
               Essayez de modifier vos filtres pour voir plus de résultats.
             </Typography>
-            <Button 
-              variant="contained" 
-              onClick={clearFilters} 
-              startIcon={<RestartAltIcon />} 
+            <Button
+              variant="contained"
+              onClick={clearFilters}
+              startIcon={<RestartAltIcon />}
               size="large"
             >
               Réinitialiser la recherche

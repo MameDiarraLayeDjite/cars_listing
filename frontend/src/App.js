@@ -34,56 +34,79 @@ function App() {
             component="main"
             sx={{
               flexGrow: 1,
-              py: 4,
             }}
           >
-            <Container maxWidth="lg">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/cars/:id" element={<CarDetails />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
+            <Routes>
+              {/* Public routes - HomePage sans Container pour pleine largeur */}
+              <Route path="/" element={<HomePage />} />
 
-                {/* Admin routes */}
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route
-                  path="/admin/dashboard"
-                  element={
-                    <PrivateRoute>
+              {/* Autres routes publiques avec Container */}
+              <Route path="/cars/:id" element={
+                <Container maxWidth="lg" sx={{ py: 4 }}>
+                  <CarDetails />
+                </Container>
+              } />
+              <Route path="/about" element={
+                <Container maxWidth="lg" sx={{ py: 4 }}>
+                  <About />
+                </Container>
+              } />
+              <Route path="/contact" element={
+                <Container maxWidth="lg" sx={{ py: 4 }}>
+                  <Contact />
+                </Container>
+              } />
+
+              {/* Admin routes avec Container */}
+              <Route path="/admin/login" element={
+                <Container maxWidth="lg" sx={{ py: 4 }}>
+                  <AdminLogin />
+                </Container>
+              } />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Container maxWidth="lg" sx={{ py: 4 }}>
                       <AdminDashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/admin/details/:id"
-                  element={
-                    <PrivateRoute>
+                    </Container>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/details/:id"
+                element={
+                  <PrivateRoute>
+                    <Container maxWidth="lg" sx={{ py: 4 }}>
                       <AdminCarDetails />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/admin/create"
-                  element={
-                    <PrivateRoute>
+                    </Container>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/create"
+                element={
+                  <PrivateRoute>
+                    <Container maxWidth="lg" sx={{ py: 4 }}>
                       <CreateCar />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/admin/edit/:id"
-                  element={
-                    <PrivateRoute>
+                    </Container>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/:id"
+                element={
+                  <PrivateRoute>
+                    <Container maxWidth="lg" sx={{ py: 4 }}>
                       <EditCar />
-                    </PrivateRoute>
-                  }
-                />
+                    </Container>
+                  </PrivateRoute>
+                }
+              />
 
-                {/* Redirect unknown routes */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Container>
+              {/* Redirect unknown routes */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           </Box>
 
           <Footer />

@@ -60,6 +60,10 @@ function validateCarData(data) {
   ) {
     errors.push('Nombre de cylindres invalide');
   }
+  if (data.status && !['actif', 'inactif'].includes(data.status)) {
+    errors.push('Statut invalide. Doit être "actif" ou "inactif"');
+  }
+  
   if (!Array.isArray(data.photos)) {
     errors.push('Photos doivent être un tableau');
   } else {
@@ -74,15 +78,21 @@ function validateCarData(data) {
   return errors;
 }
 
-// GET /api/cars?name=&vin=
+// GET /api/cars?name=&vin=&location=&showInactive=&page=&limit=
 router.get('/', async (req, res, next) => {
   try {
     const filters = {
       name: req.query.name ? req.query.name.trim() : undefined,
       vin: req.query.vin ? req.query.vin.trim() : undefined,
+      location: req.query.location ? req.query.location.trim() : undefined,
     };
-    const cars = await getAllCars(filters);
-    res.json(cars);
+    const showInactive = req.query.showInactive === 'true';
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
+    
+    const result = await getAllCars(filters, showInactive, page, limit);
+    
+    res.json(result);
   } catch (error) {
     next(error);
   }

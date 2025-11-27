@@ -5,7 +5,6 @@ import {
   Typography,
   Button,
   Box,
-  Container,
   IconButton,
   Menu,
   MenuItem,
@@ -132,7 +131,7 @@ const Navbar = () => {
         color: 'text.primary',
       }}
     >
-      <Container maxWidth="lg">
+      <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, width: '100%' }}>
         <Toolbar disableGutters>
           {/* Logo */}
           <DirectionsCarIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, color: 'primary.main' }} />
@@ -268,7 +267,7 @@ const Navbar = () => {
             )}
           </Box>
         </Toolbar>
-      </Container>
+      </Box>
 
       {/* Mobile Drawer */}
       <Drawer

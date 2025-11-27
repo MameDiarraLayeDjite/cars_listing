@@ -66,6 +66,7 @@ function EditCar() {
     transmission: '',
     fuel_type: '',
     cylinders: '',
+    status: 'actif',
     photos: [],
   });
   const [loading, setLoading] = useState(true);
@@ -98,6 +99,7 @@ function EditCar() {
           transmission: car.transmission,
           fuel_type: car.fuel_type,
           cylinders: car.cylinders.toString(),
+          status: car.status || 'actif',
           photos: Array.isArray(car.photos) && car.photos.length > 0 ? car.photos : [],
         });
       } catch {
@@ -231,6 +233,7 @@ function EditCar() {
         transmission: form.transmission.trim(),
         fuel_type: form.fuel_type.trim(),
         cylinders: parseInt(form.cylinders, 10),
+        status: form.status.trim(),
         photos: form.photos.map((p) => p.trim()),
       };
       await api.put(`/cars/${id}`, carData);
@@ -407,7 +410,7 @@ function EditCar() {
                     value={form.transmission}
                     onChange={handleChange}
                     required
-                    placeholder="Ex: Automatique, Manuelle"
+                    variant="outlined"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -432,6 +435,23 @@ function EditCar() {
                     required
                     inputProps={{ min: 1 }}
                   />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Statut"
+                    name="status"
+                    value={form.status || 'actif'}
+                    onChange={handleChange}
+                    variant="outlined"
+                    SelectProps={{
+                      native: true,
+                    }}
+                  >
+                    <option value="actif">Actif</option>
+                    <option value="inactif">Inactif</option>
+                  </TextField>
                 </Grid>
               </Grid>
             </FormSection>

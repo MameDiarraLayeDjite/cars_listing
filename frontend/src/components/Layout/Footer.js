@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, Grid, Typography, Link, IconButton, Stack, Divider, useTheme, alpha } from '@mui/material';
+import { Box, Grid, Typography, Link, IconButton, Stack, Divider, useTheme, alpha } from '@mui/material';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -24,7 +24,7 @@ const Footer = () => {
                 overflow: 'hidden',
             }}
         >
-            <Container maxWidth="lg">
+            <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 } }}>
                 <Grid container spacing={6}>
                     {/* Brand Column */}
                     <Grid item xs={12} md={4}>
@@ -157,7 +157,7 @@ const Footer = () => {
                         </Link>
                     </Stack>
                 </Box>
-            </Container>
+            </Box>
         </Box>
     );
 };

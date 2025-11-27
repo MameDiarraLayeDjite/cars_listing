@@ -60,6 +60,7 @@ const initialFormState = {
   transmission: '',
   fuel_type: '',
   cylinders: '',
+  status: 'actif', // Valeur par défaut
   photos: [],
 };
 
@@ -193,6 +194,7 @@ function CreateCar() {
         transmission: form.transmission.trim(),
         fuel_type: form.fuel_type.trim(),
         cylinders: parseInt(form.cylinders, 10),
+        status: form.status.trim(),
         photos: form.photos.map((p) => p.trim()),
       };
       await api.post('/cars', carData);
@@ -343,7 +345,7 @@ function CreateCar() {
                     value={form.transmission}
                     onChange={handleChange}
                     required
-                    placeholder="Ex: Automatique, Manuelle"
+                    variant="outlined"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -368,6 +370,23 @@ function CreateCar() {
                     required
                     inputProps={{ min: 1 }}
                   />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Statut"
+                    name="status"
+                    value={form.status || 'actif'}
+                    onChange={handleChange}
+                    variant="outlined"
+                    SelectProps={{
+                      native: true,
+                    }}
+                  >
+                    <option value="actif">Actif</option>
+                    <option value="inactif">Inactif</option>
+                  </TextField>
                 </Grid>
               </Grid>
             </FormSection>
