@@ -12,25 +12,30 @@ export const useThemeMode = () => {
   return context;
 };
 
-export const ThemeProvider = ({ children }) => {
+const ThemeProvider = ({ children }) => {
   // Initialize theme mode from localStorage or system preference
   const [mode, setMode] = useState(() => {
-    const savedMode = localStorage.getItem('themeMode');
-    if (savedMode) {
-      return savedMode;
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      const savedMode = localStorage.getItem('themeMode');
+      if (savedMode) {
+        return savedMode;
+      }
+      // Check system preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
     }
-    // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    return 'light';
+    return 'light'; // Default to light mode
   });
 
   // Toggle between light and dark mode
   const toggleTheme = () => {
     setMode((prevMode) => {
       const newMode = prevMode === 'light' ? 'dark' : 'light';
-      localStorage.setItem('themeMode', newMode);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('themeMode', newMode);
+      }
       return newMode;
     });
   };
@@ -43,6 +48,9 @@ export const ThemeProvider = ({ children }) => {
 
   // Listen for system theme changes
   useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+    
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e) => {
       // Only update if user hasn't manually set a preference
@@ -68,3 +76,5 @@ export const ThemeProvider = ({ children }) => {
     </ThemeContext.Provider>
   );
 };
+
+export { ThemeProvider };

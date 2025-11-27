@@ -1,7 +1,4 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useThemeMode } from '../../context/ThemeContext';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -9,243 +6,288 @@ import {
   Button,
   Box,
   Container,
-  Avatar,
   IconButton,
+  Menu,
+  MenuItem,
+  Avatar,
+  Tooltip,
   useTheme,
-  alpha,
-  Stack,
-  Tooltip
+  useMediaQuery,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  ListItemIcon,
 } from '@mui/material';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useThemeMode } from '../../context/ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import MenuIcon from '@mui/icons-material/Menu';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import HomeIcon from '@mui/icons-material/Home';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
-export default function Navbar() {
+const Navbar = () => {
   const { currentUser, logout } = useAuth();
   const { mode, toggleTheme } = useThemeMode();
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
   };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    logout();
+    navigate('/');
+  };
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const menuItems = [
+    { label: 'Accueil', path: '/' },
+    { label: 'À propos', path: '/about' },
+    { label: 'Contact', path: '/contact' },
+  ];
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2 }}>
+        AutoMarket
+      </Typography>
+      <Divider />
+      <List>
+        {menuItems.map((item) => (
+          <ListItem key={item.label} disablePadding>
+            <Button
+              component={Link}
+              to={item.path}
+              fullWidth
+              sx={{
+                color: 'text.primary',
+                justifyContent: 'flex-start',
+                px: 3,
+              }}
+            >
+              <ListItemText primary={item.label} />
+            </Button>
+          </ListItem>
+        ))}
+        {!currentUser && (
+          <ListItem disablePadding>
+            <Button
+              component={Link}
+              to="/admin/login"
+              fullWidth
+              sx={{
+                color: 'primary.main',
+                justifyContent: 'flex-start',
+                px: 3,
+              }}
+            >
+              <ListItemText primary="Connexion Admin" />
+            </Button>
+          </ListItem>
+        )}
+      </List>
+    </Box>
+  );
 
   return (
     <AppBar
       position="sticky"
-      elevation={0}
+      elevation={scrolled ? 4 : 0}
       sx={{
-        backdropFilter: 'blur(20px)',
-        background: theme.palette.mode === 'light'
-          ? 'linear-gradient(135deg, rgba(26, 35, 50, 0.98) 0%, rgba(44, 62, 80, 0.98) 100%)'
-          : 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%)',
-        boxShadow: '0px 2px 24px rgba(0, 0, 0, 0.12)',
-        borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.08)}`,
+        backgroundColor: scrolled
+          ? (theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(26, 35, 50, 0.8)')
+          : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px)' : 'none',
+        borderBottom: scrolled ? `1px solid ${theme.palette.divider}` : 'none',
+        transition: 'all 0.3s ease',
+        color: 'text.primary',
       }}
     >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: { xs: 70, md: 80 }, py: 1 }}>
-          {/* Logo Section */}
-          <Box
+      <Container maxWidth="lg">
+        <Toolbar disableGutters>
+          {/* Logo */}
+          <DirectionsCarIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, color: 'primary.main' }} />
+          <Typography
+            variant="h6"
+            noWrap
             component={Link}
             to="/"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              textDecoration: 'none',
+              mr: 2,
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'Outfit',
+              fontWeight: 700,
               color: 'inherit',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-2px)',
-              },
+              textDecoration: 'none',
+              flexGrow: 1,
             }}
           >
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #FF6B35 0%, #FF9F1C 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 8px 24px rgba(255, 107, 53, 0.4)',
-              }}
+            AutoMarket
+          </Typography>
+
+          {/* Mobile Menu Icon */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-label="menu"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleDrawerToggle}
+              color="inherit"
             >
-              <DirectionsCarIcon sx={{ fontSize: 28, color: 'white' }} />
-            </Box>
-            <Typography
-              variant="h5"
-              sx={{
-                fontFamily: 'Outfit, sans-serif',
-                fontWeight: 800,
-                background: 'linear-gradient(135deg, #FF6B35 0%, #FF9F1C 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.02em',
-                display: { xs: 'none', sm: 'block' },
-              }}
-            >
-              AutoMarket
-            </Typography>
+              <MenuIcon />
+            </IconButton>
           </Box>
 
-          <Box sx={{ flexGrow: 1 }} />
+          {/* Mobile Logo */}
+          <DirectionsCarIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: 'primary.main' }} />
+          <Typography
+            variant="h5"
+            noWrap
+            component={Link}
+            to="/"
+            sx={{
+              mr: 'auto',
+              display: { xs: 'flex', md: 'none' },
+              fontFamily: 'Outfit',
+              fontWeight: 700,
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            AutoMarket
+          </Typography>
 
-          {/* Navigation Links */}
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Button
-              component={Link}
-              to="/"
-              startIcon={<HomeIcon />}
-              sx={{
-                color: 'white',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.95rem',
-                px: 2.5,
-                py: 1,
-                borderRadius: 2.5,
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  backgroundColor: alpha(theme.palette.common.white, 0.12),
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              <Box sx={{ display: { xs: 'none', md: 'block' } }}>Accueil</Box>
-            </Button>
-
-            {currentUser && (
+          {/* Desktop Menu */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
+            {menuItems.map((item) => (
               <Button
+                key={item.label}
                 component={Link}
-                to="/admin/dashboard"
-                startIcon={<DashboardIcon />}
+                to={item.path}
                 sx={{
-                  color: 'white',
-                  textTransform: 'none',
+                  my: 2,
+                  color: location.pathname === item.path ? 'primary.main' : 'text.primary',
+                  display: 'block',
                   fontWeight: 600,
-                  fontSize: '0.95rem',
-                  px: 2.5,
-                  py: 1,
-                  borderRadius: 2.5,
-                  transition: 'all 0.3s ease',
-                  display: { xs: 'none', sm: 'flex' },
                   '&:hover': {
-                    backgroundColor: alpha(theme.palette.common.white, 0.12),
-                    transform: 'translateY(-2px)',
+                    color: 'primary.main',
                   },
                 }}
               >
-                Dashboard
+                {item.label}
               </Button>
-            )}
+            ))}
 
-            {/* Theme Toggle */}
-            <IconButton
-              onClick={toggleTheme}
-              sx={{
-                color: 'white',
-                width: 42,
-                height: 42,
-                borderRadius: 2.5,
-                backgroundColor: alpha(theme.palette.common.white, 0.08),
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  backgroundColor: alpha(theme.palette.common.white, 0.15),
-                  transform: 'rotate(180deg)',
-                },
-              }}
-              aria-label="toggle theme"
-            >
-              {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
+              {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
             </IconButton>
 
-            {/* Auth Section */}
             {currentUser ? (
-              <>
-                <Tooltip title={currentUser.username || 'User'}>
-                  <Avatar
-                    sx={{
-                      bgcolor: 'linear-gradient(135deg, #FF6B35 0%, #FF9F1C 100%)',
-                      width: 42,
-                      height: 42,
-                      fontSize: '1rem',
-                      fontWeight: 700,
-                      boxShadow: '0 4px 14px rgba(255, 107, 53, 0.4)',
-                      border: `2px solid ${alpha(theme.palette.common.white, 0.2)}`,
-                      transition: 'all 0.3s ease',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        transform: 'scale(1.1)',
-                        boxShadow: '0 6px 20px rgba(255, 107, 53, 0.5)',
-                      },
-                    }}
-                  >
-                    {currentUser.username ? currentUser.username.charAt(0).toUpperCase() : 'U'}
-                  </Avatar>
+              <Box sx={{ flexGrow: 0, ml: 2 }}>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleMenu} sx={{ p: 0 }}>
+                    <Avatar sx={{ bgcolor: 'primary.main' }}>
+                      {currentUser.username ? currentUser.username.charAt(0).toUpperCase() : currentUser.email.charAt(0).toUpperCase()}
+                    </Avatar>
+                  </IconButton>
                 </Tooltip>
-                <Button
-                  onClick={handleLogout}
-                  startIcon={<LogoutIcon />}
-                  sx={{
-                    color: 'white',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.95rem',
-                    px: 2.5,
-                    py: 1,
-                    borderRadius: 2.5,
-                    border: `2px solid ${alpha(theme.palette.common.white, 0.2)}`,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: alpha(theme.palette.common.white, 0.4),
-                      backgroundColor: alpha(theme.palette.common.white, 0.12),
-                      transform: 'translateY(-2px)',
-                    },
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
                   }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
                 >
-                  <Box sx={{ display: { xs: 'none', md: 'block' } }}>Déconnexion</Box>
-                </Button>
-              </>
+                  <MenuItem disabled>
+                    <Typography textAlign="center">{currentUser.email}</Typography>
+                  </MenuItem>
+                  {currentUser.role === 'admin' && (
+                    <MenuItem onClick={() => { handleClose(); navigate('/admin/dashboard'); }}>
+                      <ListItemIcon>
+                        <DashboardIcon fontSize="small" />
+                      </ListItemIcon>
+                      Dashboard Admin
+                    </MenuItem>
+                  )}
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <ExitToAppIcon fontSize="small" />
+                    </ListItemIcon>
+                    Déconnexion
+                  </MenuItem>
+                </Menu>
+              </Box>
             ) : (
               <Button
                 component={Link}
                 to="/admin/login"
-                startIcon={<LoginIcon />}
-                sx={{
-                  color: 'white',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '0.95rem',
-                  px: 2.5,
-                  py: 1,
-                  borderRadius: 2.5,
-                  background: 'linear-gradient(135deg, #FF6B35 0%, #FF9F1C 100%)',
-                  boxShadow: '0 4px 14px rgba(255, 107, 53, 0.4)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    boxShadow: '0 6px 20px rgba(255, 107, 53, 0.5)',
-                    transform: 'translateY(-2px)',
-                  },
-                }}
+                variant="contained"
+                sx={{ ml: 2, borderRadius: 2 }}
               >
-                Connexion
+                Connexion Admin
               </Button>
             )}
-          </Stack>
+          </Box>
         </Toolbar>
       </Container>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        anchor="left"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+        }}
+      >
+        {drawer}
+      </Drawer>
     </AppBar>
   );
-}
+};
+
+export default Navbar;

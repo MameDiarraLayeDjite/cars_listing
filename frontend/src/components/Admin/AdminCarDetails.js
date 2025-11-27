@@ -376,7 +376,8 @@ function AdminCarDetails() {
                             </Grid>
                             <Grid item xs={6} sm={4}>
                                 <Box sx={{ textAlign: 'center' }}>
-                                    <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mt: 5 }}>
+                                    <DirectionsCarIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
                                         Marque
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>

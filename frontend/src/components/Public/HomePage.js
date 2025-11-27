@@ -16,151 +16,181 @@ import {
   TextField,
   MenuItem,
   Pagination,
-  Stack,
   alpha,
   useTheme,
   InputAdornment,
-  IconButton,
   Fade,
   Zoom,
+  Slider,
+  Popover,
+  Select,
+  FormControl,
+  InputLabel,
+  Badge,
+  Divider,
 } from '@mui/material';
-import { styled, css } from '@mui/material/styles';
-import { motion } from 'framer-motion';
+import { styled } from '@mui/material/styles';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api/api';
+import SearchIcon from '@mui/icons-material/Search';
+import SpeedIcon from '@mui/icons-material/Speed';
+import SortIcon from '@mui/icons-material/Sort';
+import EuroIcon from '@mui/icons-material/Euro';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import SpeedIcon from '@mui/icons-material/Speed';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-// === Palette Saraya - Orange & Bleu Foncé ===
+// === Couleurs Saraya ===
 const COLORS = {
-  primary: '#FF6B35',    // Saraya Orange
-  secondary: '#FF9F1C',  // Orange Vif pour accents
-  accent: '#1A2332',     // Saraya Bleu Foncé
-  success: '#10B981',
-  backgroundLight: '#F8FAFC',
-  backgroundDark: '#0D1B2A',
+  primary: '#FF6B35',
+  secondary: '#FF9F1C',
+  accent: '#1A2332',
 };
 
-// === Composants stylisés Soft UI + Glassmorphism ===
-const GlassContainer = styled(Container)(({ theme }) => ({
-  background: theme.palette.mode === 'light'
-    ? 'rgba(248, 250, 252, 0.85)'
-    : 'rgba(15, 23, 42, 0.85)',
-  backdropFilter: 'blur(20px)',
-  WebkitBackdropFilter: 'blur(20px)',
-  minHeight: '100vh',
-  paddingTop: theme.spacing(6),
-  paddingBottom: theme.spacing(10),
-}));
+// === Hero Section Full Width ===
+const HeroWrapper = styled(Box)({
+  width: '100%',
+  margin: 0,
+  padding: 0,
+  position: 'relative',
+});
 
 const HeroSection = styled(Box)(({ theme }) => ({
-  background: theme.palette.mode === 'light'
-    ? 'linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 159, 28, 0.1) 100%)'
-    : 'linear-gradient(135deg, rgba(255, 140, 97, 0.25) 0%, rgba(255, 159, 28, 0.2) 100%)',
-  borderRadius: 32,
-  padding: theme.spacing(10, 6),
-  marginBottom: theme.spacing(6),
-  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-  boxShadow: theme.palette.mode === 'light'
-    ? '0 20px 40px rgba(99, 102, 241, 0.08)'
-    : '0 20px 40px rgba(0, 0, 0, 0.4)',
+  width: '100%',
   position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '4px',
-    background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})`,
-  },
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(8, 4),
-  },
-}));
-
-const StyledCard = styled(motion.div)(({ theme }) => ({
-  height: '100%',
-  borderRadius: 28,
-  overflow: 'hidden',
   background: theme.palette.mode === 'light'
-    ? 'rgba(255, 255, 255, 0.75)'
-    : 'rgba(30, 41, 59, 0.7)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
-  border: `1px solid ${alpha(theme.palette.divider, 0.15)}`,
-  boxShadow: theme.palette.mode === 'light'
-    ? '0 8px 32px rgba(15, 23, 42, 0.08)'
-    : '0 8px 32px rgba(0, 0, 0, 0.4)',
-  transition: 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
-  '&:hover': {
-    transform: 'translateY(-12px) scale(1.02)',
-    boxShadow: theme.palette.mode === 'light'
-      ? '0 25px 60px rgba(255, 107, 53, 0.25)'
-      : '0 25px 60px rgba(255, 140, 97, 0.35)',
-  },
-}));
-
-const StyledCardMedia = styled(CardMedia)({
-  height: 240,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  position: 'relative',
+    ? 'linear-gradient(135deg, #F0F4F8 0%, #E2E8F0 100%)'
+    : 'linear-gradient(135deg, #0F172A 0%, #000000 100%)',
+  padding: '120px 0 100px',
+  overflow: 'hidden',
+  minHeight: 600,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.2)',
   '&::after': {
     content: '""',
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '70%',
-    background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%)',
+    inset: 0,
+    background: 'url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80") center 40% / cover no-repeat',
+    filter: 'brightness(0.6) contrast(1.1)',
+    opacity: theme.palette.mode === 'light' ? 0.35 : 0.45,
+    zIndex: 0,
   },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    inset: 0,
+    background: theme.palette.mode === 'light'
+      ? 'linear-gradient(to bottom, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.72) 50%, rgba(255,255,255,0.88) 100%)'
+      : 'linear-gradient(to bottom, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.78) 50%, rgba(15, 23, 42, 0.92) 100%)',
+    zIndex: 1,
+  },
+  '& > *': {
+    position: 'relative',
+    zIndex: 2,
+  }
+}));
+
+// === Filter Bar ===
+const FilterBar = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3.5),
+  borderRadius: 20,
+  background: theme.palette.mode === 'light'
+    ? 'rgba(255, 255, 255, 0.96)'
+    : 'rgba(30, 41, 59, 0.92)',
+  backdropFilter: 'blur(30px)',
+  border: `2px solid ${alpha(theme.palette.divider, 0.08)}`,
+  marginTop: -60,
+  marginBottom: theme.spacing(6),
+  position: 'relative',
+  zIndex: 20,
+  boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
+}));
+
+// === Card Styles ===
+const CarCard = styled(Card)(({ theme }) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  borderRadius: 16,
+  overflow: 'hidden',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  boxShadow: '0 8px 30px -8px rgba(0, 0, 0, 0.12)',
+  border: `1px solid ${alpha(theme.palette.divider, 0.06)}`,
+  background: theme.palette.background.paper,
+  '&:hover': {
+    transform: 'translateY(-8px) scale(1.01)',
+    boxShadow: '0 20px 40px -8px rgba(255, 107, 53, 0.2)',
+    borderColor: alpha(COLORS.primary, 0.3),
+    '& .car-image': {
+      transform: 'scale(1.08)',
+    },
+    '& .view-btn': {
+      backgroundColor: COLORS.primary,
+      color: '#fff',
+      borderColor: COLORS.primary,
+      transform: 'translateX(4px)',
+    },
+    '& .price-badge': {
+      transform: 'scale(1.05)',
+      background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%)`,
+    }
+  }
+}));
+
+const CarImage = styled(CardMedia)({
+  height: 240,
+  width: '100%',
+  objectFit: 'cover',
+  transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
 });
 
-const PriceTag = styled(Paper)(({ theme }) => ({
+const PriceBadge = styled(Box)({
   position: 'absolute',
-  bottom: 16,
-  right: 16,
-  padding: '10px 18px',
-  borderRadius: 16,
+  top: 20,
+  right: 20,
+  background: 'rgba(26, 35, 50, 0.92)',
+  color: 'white',
+  padding: '10px 20px',
+  borderRadius: 100,
   fontWeight: 800,
   fontSize: '1.1rem',
-  background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.secondary})`,
-  color: 'white',
-  boxShadow: `0 8px 25px ${alpha(COLORS.primary, 0.5)}`,
+  backdropFilter: 'blur(12px)',
+  boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
+  border: '2px solid rgba(255,255,255,0.15)',
+  transition: 'all 0.3s ease',
   zIndex: 2,
+});
+
+const SpecBadge = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  color: theme.palette.text.secondary,
+  fontSize: '0.9rem',
+  fontWeight: 600,
+  background: alpha(COLORS.primary, 0.06),
+  padding: '10px 14px',
+  borderRadius: 10,
+  border: `1px solid ${alpha(COLORS.primary, 0.1)}`,
+  transition: 'all 0.2s ease',
+  '&:hover': {
+    background: alpha(COLORS.primary, 0.1),
+    transform: 'translateY(-2px)',
+  }
 }));
 
-const FilterBar = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
-  borderRadius: 24,
-  background: theme.palette.mode === 'light'
-    ? 'rgba(255, 255, 255, 0.8)'
-    : 'rgba(30, 41, 59, 0.7)',
-  backdropFilter: 'blur(20px)',
-  border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
-  boxShadow: theme.palette.mode === 'light'
-    ? '0 10px 30px rgba(0, 0, 0, 0.08)'
-    : '0 10px 30px rgba(0, 0, 0, 0.4)',
-}));
-
+// === Options de filtre ===
 const FILTER_OPTIONS = {
   make: ['Toutes', 'Peugeot', 'Renault', 'Volkswagen', 'BMW', 'Audi', 'Mercedes', 'Toyota', 'Citroën'],
-  priceRange: [
-    { value: '0-10000', label: 'Moins de 10 000 €' },
-    { value: '10000-20000', label: '10 000 € - 20 000 €' },
-    { value: '20000-35000', label: '20 000 € - 35 000 €' },
-    { value: '35000-999999', label: 'Plus de 35 000 €' },
-  ],
   sortBy: [
     { value: 'price-asc', label: 'Prix croissant' },
     { value: 'price-desc', label: 'Prix décroissant' },
-    { value: 'year-desc', label: 'Plus récent d\'abord' },
-    { value: 'mileage-asc', label: 'Moins de km' },
+    { value: 'year-desc', label: 'Plus récent' },
+    { value: 'mileage-asc', label: 'Faible kilométrage' },
   ],
 };
 
@@ -172,13 +202,17 @@ function HomePage() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     make: 'Toutes',
-    priceRange: '',
+    priceRange: [0, 1000000],
     sortBy: 'price-asc',
     searchQuery: '',
   });
 
+  const [priceAnchorEl, setPriceAnchorEl] = useState(null);
+  const openPrice = Boolean(priceAnchorEl);
+
   const CARS_PER_PAGE = 9;
 
+  // Chargement des voitures
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -194,6 +228,7 @@ function HomePage() {
     fetchCars();
   }, []);
 
+  // Filtrage des voitures
   const filteredCars = useMemo(() => {
     let result = [...cars];
 
@@ -201,10 +236,9 @@ function HomePage() {
       result = result.filter(car => car.make === filters.make);
     }
 
-    if (filters.priceRange) {
-      const [min, max] = filters.priceRange.split('-').map(Number);
-      result = result.filter(car => car.price >= min && (max ? car.price <= max : true));
-    }
+    result = result.filter(
+      car => car.price >= filters.priceRange[0] && car.price <= filters.priceRange[1]
+    );
 
     if (filters.searchQuery) {
       const q = filters.searchQuery.toLowerCase();
@@ -224,233 +258,487 @@ function HomePage() {
     return result;
   }, [cars, filters]);
 
+  // Pagination
   const pageCount = Math.ceil(filteredCars.length / CARS_PER_PAGE);
-  const paginatedCars = filteredCars.slice((page - 1) * CARS_PER_PAGE, page * CARS_PER_PAGE);
+  const paginatedCars = useMemo(() => {
+    const startIndex = (page - 1) * CARS_PER_PAGE;
+    return filteredCars.slice(startIndex, startIndex + CARS_PER_PAGE);
+  }, [filteredCars, page]);
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(price);
+    new Intl.NumberFormat('fr-FR', { 
+      style: 'currency', 
+      currency: 'EUR', 
+      maximumFractionDigits: 0 
+    }).format(price);
 
-  const clearSearch = () => setFilters(prev => ({ ...prev, searchQuery: '' }));
+  const handlePriceChange = (event, newValue) => {
+    setFilters(prev => ({ ...prev, priceRange: newValue }));
+  };
 
-  // === Rendu ===
+  const clearFilters = () => {
+    setFilters({
+      make: 'Toutes',
+      priceRange: [0, 1000000],
+      sortBy: 'price-asc',
+      searchQuery: '',
+    });
+    setPage(1);
+  };
+
+  // Loading State
   if (loading) {
     return (
-      <GlassContainer maxWidth="lg">
-        <Grid container spacing={4}>
-          {[...Array(9)].map((_, i) => (
-            <Grid item xs={12} sm={6} md={4} key={i}>
-              <Skeleton variant="rectangular" height={380} sx={{ borderRadius: 7, bgcolor: 'rgba(255,255,255,0.1)' }} />
-            </Grid>
-          ))}
-        </Grid>
-      </GlassContainer>
+      <Box>
+        <Skeleton variant="rectangular" height={600} sx={{ width: '100%', mb: 4 }} />
+        <Container maxWidth="xl">
+          <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 6, mb: 6 }} />
+          <Grid container spacing={3}>
+            {[...Array(9)].map((_, i) => (
+              <Grid item xs={12} sm={6} md={4} key={i}>
+                <Skeleton variant="rectangular" height={480} sx={{ borderRadius: 4 }} />
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
     );
   }
 
+  // Error State
   if (error) {
     return (
-      <GlassContainer maxWidth="sm">
-        <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>
-        <Button variant="contained" onClick={() => window.location.reload()} sx={{ mt: 3 }}>
+      <Container maxWidth="sm" sx={{ mt: 10 }}>
+        <Alert severity="error" variant="filled" sx={{ borderRadius: 4 }}>
+          {error}
+        </Alert>
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.reload()} 
+          sx={{ mt: 3 }}
+        >
           Réessayer
         </Button>
-      </GlassContainer>
+      </Container>
     );
   }
 
   return (
-    <GlassContainer maxWidth="lg">
-      {/* Hero */}
-      <Fade in timeout={800}>
-        <HeroSection>
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: { xs: '2.8rem', md: '4rem' },
-              fontWeight: 900,
-              background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%)`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 2,
-            }}
-          >
-            Trouvez votre prochaine voiture
-          </Typography>
-          <Typography variant="h5" color="text.secondary" sx={{ maxWidth: 700, fontWeight: 500 }}>
-            Véhicules d’occasion premium, inspectés 150 points et garantis jusqu’à 24 mois.
-          </Typography>
-        </HeroSection>
-      </Fade>
+    <Box sx={{ minHeight: '100vh', pb: 8, bgcolor: theme.palette.background.default }}>
+      {/* Hero Section */}
+      <HeroWrapper>
+        <Fade in timeout={800}>
+          <HeroSection>
+            <Container maxWidth="lg">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9 }}
+                style={{ textAlign: 'center' }}
+              >
+                <Chip
+                  label="🚗 Nouveaux Arrivages"
+                  sx={{
+                    mb: 4,
+                    fontWeight: 800,
+                    px: 3,
+                    py: 1.5,
+                    height: 'auto',
+                    fontSize: '0.9rem',
+                    background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%)`,
+                    color: '#fff',
+                    boxShadow: `0 8px 24px ${alpha(COLORS.primary, 0.5)}`,
+                  }}
+                />
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: { xs: '2.5rem', sm: '4rem', md: '6rem' },
+                    fontWeight: 900,
+                    lineHeight: 1.05,
+                    mb: 4,
+                    letterSpacing: '-0.03em',
+                    background: theme.palette.mode === 'light'
+                      ? `linear-gradient(135deg, ${COLORS.accent} 0%, #475569 100%)`
+                      : 'linear-gradient(135deg, #ffffff 0%, #94a3b8 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  L'Excellence Automobile
+                  <br />
+                  <Box component="span" sx={{ color: COLORS.primary, WebkitTextFillColor: 'initial' }}>
+                    À Votre Portée
+                  </Box>
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    mb: 6,
+                    fontWeight: 400,
+                    maxWidth: 750,
+                    mx: 'auto',
+                    lineHeight: 1.7,
+                    fontSize: { xs: '1.1rem', md: '1.45rem' },
+                  }}
+                >
+                  Découvrez notre collection exclusive de véhicules premium, rigoureusement inspectés pour vous offrir une expérience de conduite inégalée.
+                </Typography>
+              </motion.div>
+            </Container>
+          </HeroSection>
+        </Fade>
+      </HeroWrapper>
 
-      {/* Filtres */}
-      <FilterBar elevation={0}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={5}>
-            <TextField
-              fullWidth
-              placeholder="Rechercher (marque, modèle, année...)"
-              value={filters.searchQuery}
-              onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: filters.searchQuery && (
-                  <InputAdornment position="end">
-                    <IconButton onClick={clearSearch} size="small">
-                      <ClearIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+      {/* Content Section */}
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
+        {/* Filter Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.7 }}
+        >
+          <FilterBar elevation={0}>
+            <Grid container spacing={2} alignItems="center">
+              {/* Recherche */}
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher..."
+                  value={filters.searchQuery}
+                  onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: COLORS.primary }} />
+                      </InputAdornment>
+                    ),
+                    sx: { 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    },
+                  }}
+                  size="medium"
+                />
+              </Grid>
+
+              {/* Marque */}
+              <Grid item xs={6} md={2}>
+                <FormControl fullWidth size="medium">
+                  <InputLabel>Marque</InputLabel>
+                  <Select
+                    value={filters.make}
+                    label="Marque"
+                    onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
+                    sx={{ 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    }}
+                  >
+                    {FILTER_OPTIONS.make.map(m => (
+                      <MenuItem key={m} value={m}>{m}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Prix */}
+              <Grid item xs={6} md={2}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={(e) => setPriceAnchorEl(e.currentTarget)}
+                  startIcon={<EuroIcon />}
+                  endIcon={
+                    <Badge 
+                      badgeContent={
+                        filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000 ? '!' : 0
+                      } 
+                      color="primary" 
+                      variant="dot" 
+                    />
+                  }
+                  sx={{
+                    height: 56,
+                    borderRadius: 3,
+                    borderColor: alpha(theme.palette.divider, 0.2),
+                    color: 'text.primary',
+                    bgcolor: alpha(theme.palette.background.paper, 0.5),
+                    justifyContent: 'space-between',
+                    textTransform: 'none',
+                  }}
+                >
+                  Budget
+                </Button>
+                <Popover
+                  open={openPrice}
+                  anchorEl={priceAnchorEl}
+                  onClose={() => setPriceAnchorEl(null)}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                  PaperProps={{ 
+                    sx: { 
+                      p: 3, 
+                      width: 320, 
+                      borderRadius: 4, 
+                      mt: 1, 
+                      boxShadow: theme.shadows[10] 
+                    } 
+                  }}
+                >
+                  <Typography variant="subtitle1" fontWeight={700} gutterBottom>
+                    Fourchette de prix
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+                    {formatPrice(filters.priceRange[0])} - {formatPrice(filters.priceRange[1])}
+                  </Typography>
+                  <Slider
+                    value={filters.priceRange}
+                    onChange={handlePriceChange}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={1000000}
+                    step={1000}
+                    sx={{ color: COLORS.primary }}
+                  />
+                </Popover>
+              </Grid>
+
+              {/* Tri */}
+              <Grid item xs={6} md={2}>
+                <FormControl fullWidth size="medium">
+                  <InputLabel>Trier par</InputLabel>
+                  <Select
+                    value={filters.sortBy}
+                    label="Trier par"
+                    onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
+                    startAdornment={
+                      <InputAdornment position="start">
+                        <SortIcon fontSize="small" />
+                      </InputAdornment>
+                    }
+                    sx={{ 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    }}
+                  >
+                    {FILTER_OPTIONS.sortBy.map(option => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Reset & Count */}
+              <Grid item xs={12} md={3} display="flex" justifyContent="flex-end" gap={1.5}>
+                <Button
+                  color="error"
+                  onClick={clearFilters}
+                  sx={{ 
+                    minWidth: 56, 
+                    height: 56, 
+                    borderRadius: 3, 
+                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}` 
+                  }}
+                >
+                  <RestartAltIcon />
+                </Button>
+                <Chip
+                  label={`${filteredCars.length} Véhicules`}
+                  color="primary"
+                  sx={{
+                    fontWeight: 700,
+                    height: 56,
+                    borderRadius: 3,
+                    px: 3,
+                    fontSize: '1rem',
+                    flex: 1,
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </FilterBar>
+        </motion.div>
+
+        {/* Grille de voitures - 3 colonnes fixes en desktop */}
+        <Box sx={{ width: '100%' }}>
+          <Grid container spacing={3}>
+            <AnimatePresence>
+              {paginatedCars.map((car, index) => {
+                const imageUrl = car.photos?.[0] || 
+                  `https://source.unsplash.com/random/800x600/?${car.make}+${car.model}`;
+
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={car.id}>
+                    <Zoom in timeout={300 + (index % 3) * 100}>
+                      <CarCard
+                        component={motion.div}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <Link 
+                          to={`/cars/${car.id}`} 
+                          style={{ 
+                            textDecoration: 'none', 
+                            color: 'inherit',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: '100%'
+                          }}
+                        >
+                          {/* Image */}
+                          <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                            <CarImage 
+                              className="car-image"
+                              image={imageUrl} 
+                              title={`${car.make} ${car.model}`} 
+                            />
+                            <PriceBadge className="price-badge">
+                              {formatPrice(car.price)}
+                            </PriceBadge>
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                height: '65%',
+                                background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+                                zIndex: 1,
+                              }}
+                            />
+                          </Box>
+
+                          {/* Contenu */}
+                          <CardContent sx={{ flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column' }}>
+                            {/* Titre */}
+                            <Typography
+                              variant="h6"
+                              fontWeight={800}
+                              sx={{
+                                lineHeight: 1.3,
+                                mb: 2,
+                                fontSize: '1.3rem',
+                                minHeight: '2.6em',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                              }}
+                            >
+                              {car.year} {car.make} {car.model}
+                            </Typography>
+
+                            <Divider sx={{ mb: 2.5, borderColor: alpha(theme.palette.divider, 0.1) }} />
+
+                            {/* Specs */}
+                            <Grid container spacing={1.5} sx={{ mb: 3 }}>
+                              <Grid item xs={6}>
+                                <SpecBadge>
+                                  <SpeedIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                                  {car.mileage?.toLocaleString()} km
+                                </SpecBadge>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <SpecBadge>
+                                  <LocalGasStationIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                                  {car.fuelType || 'Essence'}
+                                </SpecBadge>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <SpecBadge>
+                                  <SettingsSuggestIcon fontSize="small" sx={{ color: COLORS.primary }} />
+                                  {car.transmission || 'Auto'}
+                                </SpecBadge>
+                              </Grid>
+                            </Grid>
+
+                            {/* Button */}
+                            <Button
+                              className="view-btn"
+                              variant="outlined"
+                              fullWidth
+                              endIcon={<ArrowForwardIcon />}
+                              sx={{
+                                mt: 'auto',
+                                borderRadius: 3,
+                                textTransform: 'none',
+                                fontWeight: 700,
+                                py: 1.3,
+                                borderWidth: 2,
+                                borderColor: alpha(COLORS.primary, 0.2),
+                                color: theme.palette.text.primary,
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                  borderWidth: 2,
+                                  borderColor: 'transparent',
+                                },
+                              }}
+                            >
+                              Voir détails
+                            </Button>
+                          </CardContent>
+                        </Link>
+                      </CarCard>
+                    </Zoom>
+                  </Grid>
+                );
+              })}
+            </AnimatePresence>
+          </Grid>
+        </Box>
+
+        {/* Pagination */}
+        {pageCount > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+            <Pagination
+              count={pageCount}
+              page={page}
+              onChange={(_, p) => setPage(p)}
+              size="large"
+              color="primary"
+              shape="rounded"
+              showFirstButton
+              showLastButton
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 4,
-                  background: alpha(theme.palette.background.paper, 0.6),
-                  backdropFilter: 'blur(10px)',
+                '& .MuiPaginationItem-root': {
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  borderRadius: 2,
                 },
               }}
             />
-          </Grid>
+          </Box>
+        )}
 
-          <Grid item xs={6} sm={4} md={2}>
-            <TextField select fullWidth label="Marque" value={filters.make} name="make" onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}>
-              {FILTER_OPTIONS.make.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={6} sm={4} md={2}>
-            <TextField select fullWidth label="Prix" value={filters.priceRange} name="priceRange" onChange={(e) => setFilters(prev => ({ ...prev, priceRange: e.target.value }))}>
-              <MenuItem value="">Tous</MenuItem>
-              {FILTER_OPTIONS.priceRange.map(r => (
-                <MenuItem key={r.value} value={r.value}>{r.label}</MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={12} sm={4} md={3}>
-            <TextField select fullWidth label="Trier par" value={filters.sortBy} name="sortBy" onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}>
-              {FILTER_OPTIONS.sortBy.map(o => (
-                <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-        </Grid>
-      </FilterBar>
-
-      {/* Résultats */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6" fontWeight={600} color="text.primary">
-          {filteredCars.length} véhicule{filteredCars.length > 1 ? 's' : ''} disponible{filteredCars.length > 1 ? 's' : ''}
-        </Typography>
-      </Box>
-
-      {/* Grille de cartes */}
-      <Grid container spacing={{ xs: 3, md: 4 }}>
-        {paginatedCars.map((car, index) => {
-          const imageUrl = car.photos?.[0] || `https://source.unsplash.com/random/800x600/?${car.make}+${car.model}`;
-
-          return (
-            <Grid item xs={12} sm={6} md={4} key={car.id}>
-              <Zoom in timeout={300 + index * 100}>
-                <StyledCard
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.05 }}
-                >
-                  <Link to={`/cars/${car.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                    <Box sx={{ position: 'relative' }}>
-                      <StyledCardMedia image={imageUrl} title={`${car.make} ${car.model}`} />
-                      <PriceTag elevation={6}>
-                        <AttachMoneyIcon fontSize="small" sx={{ mr: 0.5 }} />
-                        {formatPrice(car.price)}
-                      </PriceTag>
-                    </Box>
-
-                    <CardContent sx={{ pt: 3 }}>
-                      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                        <Typography variant="h6" fontWeight={700} noWrap>
-                          {car.make} {car.model}
-                        </Typography>
-                        <Chip
-                          label={car.condition === 'new' ? 'Neuf' : 'Occasion'}
-                          size="small"
-                          color={car.condition === 'new' ? 'primary' : 'default'}
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </Box>
-
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        {car.year} • {car.mileage?.toLocaleString('fr')} km
-                      </Typography>
-
-                      <Stack direction="row" spacing={1} mt={2} flexWrap="wrap" gap={1}>
-                        <Chip icon={<LocalGasStationIcon fontSize="small" />} label={car.fuelType || 'N/A'} size="small" variant="outlined" />
-                        <Chip icon={<SpeedIcon fontSize="small" />} label={car.transmission || 'Auto'} size="small" variant="outlined" />
-                      </Stack>
-
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          mt: 3,
-                          py: 1.5,
-                          borderRadius: 3,
-                          textTransform: 'none',
-                          fontWeight: 600,
-                          background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.secondary})`,
-                        }}
-                      >
-                        Voir le véhicule
-                      </Button>
-                    </CardContent>
-                  </Link>
-                </StyledCard>
-              </Zoom>
-            </Grid>
-          );
-        })}
-      </Grid>
-
-      {/* Pagination */}
-      {pageCount > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-          <Pagination
-            count={pageCount}
-            page={page}
-            onChange={(_, p) => setPage(p)}
-            size="large"
-            color="primary"
-            sx={{
-              '& .MuiPaginationItem-root': {
-                borderRadius: 3,
-                fontWeight: 600,
-              },
-            }}
-          />
-        </Box>
-      )}
-
-      {/* Aucun résultat */}
-      {filteredCars.length === 0 && !loading && (
-        <Box textAlign="center" py={10}>
-          <DirectionsCarIcon sx={{ fontSize: 80, color: 'text.disabled', mb: 3 }} />
-          <Typography variant="h5" gutterBottom>
-            Aucun véhicule trouvé
-          </Typography>
-          <Typography color="text.secondary" sx={{ mb: 4 }}>
-            Modifiez vos filtres pour voir plus de résultats.
-          </Typography>
-          <Button variant="outlined" size="large" onClick={() => setFilters({
-            make: 'Toutes', priceRange: '', sortBy: 'price-asc', searchQuery: ''
-          })}>
-            Réinitialiser
-          </Button>
-        </Box>
-      )}
-    </GlassContainer>
+        {/* Empty State */}
+        {filteredCars.length === 0 && !loading && (
+          <Box textAlign="center" py={12}>
+            <DirectionsCarIcon sx={{ fontSize: 90, color: 'text.disabled', mb: 3, opacity: 0.4 }} />
+            <Typography variant="h5" color="text.secondary" fontWeight={700} gutterBottom>
+              Aucun véhicule trouvé
+            </Typography>
+            <Typography color="text.secondary" mb={4} fontSize="1.1rem">
+              Essayez de modifier vos filtres pour voir plus de résultats.
+            </Typography>
+            <Button 
+              variant="contained" 
+              onClick={clearFilters} 
+              startIcon={<RestartAltIcon />} 
+              size="large"
+            >
+              Réinitialiser la recherche
+            </Button>
+          </Box>
+        )}
+      </Container>
+    </Box>
   );
 }
 

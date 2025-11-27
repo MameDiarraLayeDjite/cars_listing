@@ -253,14 +253,22 @@ function AdminDashboard() {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Stock #</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Nom complet</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Véhicule</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>VIN</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Kilométrage</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Carburant</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Transmission</TableCell>
                   <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Prix</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Statut</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {cars.map((car) => {
                   const fullName = `${car.year} ${car.make} ${car.model} ${car.series || ''}`.trim();
+                  const isAvailable = car.availability === 'available' || car.availability === 'Disponible';
+                  const isSold = car.availability === 'sold' || car.availability === 'Vendu';
+
                   return (
                     <TableRow
                       key={car.id}
@@ -275,12 +283,89 @@ function AdminDashboard() {
                           label={car.stock_number}
                           size="small"
                           variant="outlined"
-                          sx={{ fontWeight: 600 }}
+                          sx={{
+                            fontWeight: 600,
+                            borderRadius: 2,
+                          }}
                         />
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>{fullName}</TableCell>
-                      <TableCell sx={{ fontWeight: 700, color: 'primary.main' }}>
-                        {formatPrice(car.sale_price || car.price)}
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                          {fullName}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {car.body_type || 'N/A'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontSize: '0.75rem',
+                            color: 'text.secondary'
+                          }}
+                        >
+                          {car.vin || 'N/A'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {car.mileage ? `${car.mileage.toLocaleString('fr-FR')} km` : 'N/A'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={car.fuel_type || 'N/A'}
+                          size="small"
+                          sx={{
+                            backgroundColor: alpha(theme.palette.success.main, 0.1),
+                            color: 'success.main',
+                            fontWeight: 600,
+                            borderRadius: 2,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={car.transmission || 'N/A'}
+                          size="small"
+                          sx={{
+                            backgroundColor: alpha(theme.palette.info.main, 0.1),
+                            color: 'info.main',
+                            fontWeight: 600,
+                            borderRadius: 2,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                          {formatPrice(car.sale_price || car.price)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={
+                            isAvailable ? 'Disponible' :
+                              isSold ? 'Vendu' :
+                                car.availability || 'N/A'
+                          }
+                          size="small"
+                          sx={{
+                            backgroundColor: isAvailable
+                              ? alpha(theme.palette.success.main, 0.15)
+                              : isSold
+                                ? alpha(theme.palette.error.main, 0.15)
+                                : alpha(theme.palette.warning.main, 0.15),
+                            color: isAvailable
+                              ? 'success.main'
+                              : isSold
+                                ? 'error.main'
+                                : 'warning.main',
+                            fontWeight: 700,
+                            borderRadius: 2,
+                          }}
+                        />
                       </TableCell>
                       <TableCell align="right">
                         <Stack direction="row" spacing={1} justifyContent="flex-end">

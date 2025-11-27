@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       try {
         const decoded = jwtDecode(token);
         setCurrentUser({
-          email: decoded.sub || decoded.email || 'admin@example.com',
+          email: decoded.sub || decoded.email,
           username: decoded.username || decoded.sub || 'Admin',
           role: decoded.role || 'admin'
         });
