@@ -77,7 +77,7 @@ const Navbar = () => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        AutoMarket
+        SarayaAutoSales
       </Typography>
       <Divider />
       <List>
@@ -150,7 +150,7 @@ const Navbar = () => {
               flexGrow: 1,
             }}
           >
-            AutoMarket
+            SarayaAutoSales
           </Typography>
 
           {/* Mobile Menu Icon */}
@@ -183,7 +183,7 @@ const Navbar = () => {
               textDecoration: 'none',
             }}
           >
-            AutoMarket
+            SarayaAutoSales
           </Typography>
 
           {/* Desktop Menu */}

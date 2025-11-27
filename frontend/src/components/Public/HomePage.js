@@ -110,9 +110,9 @@ const FilterBar = styled(Paper)(({ theme }) => ({
   boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
 }));
 
-// === Card Styles - Hauteur uniforme ===
+// === Card Styles - Hauteur et largeur fixes ===
 const CarCard = styled(Card)(({ theme }) => ({
-  height: '100%', // Crucial pour que la carte prenne toute la hauteur de l'élément Grid.
+  height: '100%',
   display: 'flex',
   flexDirection: 'column',
   borderRadius: 16,
@@ -121,8 +121,8 @@ const CarCard = styled(Card)(({ theme }) => ({
   boxShadow: '0 8px 30px -8px rgba(0, 0, 0, 0.12)',
   border: `1px solid ${alpha(theme.palette.divider, 0.06)}`,
   background: theme.palette.background.paper,
-
-
+  minHeight: '550px',
+  maxHeight: '550px',
   '&:hover': {
     transform: 'translateY(-8px) scale(1.01)',
     boxShadow: '0 20px 40px -8px rgba(255, 107, 53, 0.2)',
@@ -255,7 +255,7 @@ function HomePage() {
   // Filtrage des voitures
   const filteredCars = useMemo(() => {
     if (!cars || !Array.isArray(cars)) return [];
-
+    
     let result = [...cars];
 
     if (filters.make && filters.make !== 'Toutes') {
@@ -296,10 +296,10 @@ function HomePage() {
   }, [filteredCars, pagination.page]);
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
+    new Intl.NumberFormat('fr-FR', { 
+      style: 'currency', 
+      currency: 'EUR', 
+      maximumFractionDigits: 0 
     }).format(price);
 
   const handlePriceChange = (event, newValue) => {
@@ -327,7 +327,7 @@ function HomePage() {
         <Skeleton variant="rectangular" height={600} sx={{ width: '100%', mb: 4 }} />
         <Container maxWidth="xl">
           <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 6, mb: 6 }} />
-          <Grid container spacing={3} alignItems="stretch">
+          <Grid container spacing={3}>
             {[...Array(9)].map((_, i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
                 <Skeleton variant="rectangular" height={480} sx={{ borderRadius: 4 }} />
@@ -346,9 +346,9 @@ function HomePage() {
         <Alert severity="error" variant="filled" sx={{ borderRadius: 4 }}>
           {error}
         </Alert>
-        <Button
-          variant="contained"
-          onClick={() => window.location.reload()}
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.reload()} 
           sx={{ mt: 3 }}
         >
           Réessayer
@@ -426,7 +426,7 @@ function HomePage() {
       </HeroWrapper>
 
       {/* Content Section - Container pour marges équilibrées */}
-      <Container maxWidth="xl" sx={{ pt: 4, pb: 8 }}>
+      <Container maxWidth="xl" sx={{ mt: 0, px: { xs: 2, sm: 3, md: 4 } }}>
         {/* Filter Bar */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -448,9 +448,9 @@ function HomePage() {
                         <SearchIcon sx={{ color: COLORS.primary }} />
                       </InputAdornment>
                     ),
-                    sx: {
-                      borderRadius: 3,
-                      bgcolor: alpha(theme.palette.background.paper, 0.5)
+                    sx: { 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
                     },
                   }}
                   size="medium"
@@ -465,9 +465,9 @@ function HomePage() {
                     value={filters.make}
                     label="Marque"
                     onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
-                    sx={{
-                      borderRadius: 3,
-                      bgcolor: alpha(theme.palette.background.paper, 0.5)
+                    sx={{ 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
                     }}
                   >
                     {FILTER_OPTIONS.make.map(m => (
@@ -485,9 +485,9 @@ function HomePage() {
                     value={filters.location}
                     label="Localisation"
                     onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    sx={{
-                      borderRadius: 3,
-                      bgcolor: alpha(theme.palette.background.paper, 0.5)
+                    sx={{ 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
                     }}
                   >
                     {FILTER_OPTIONS.location.map(location => (
@@ -505,12 +505,12 @@ function HomePage() {
                   onClick={(e) => setPriceAnchorEl(e.currentTarget)}
                   startIcon={<EuroIcon />}
                   endIcon={
-                    <Badge
+                    <Badge 
                       badgeContent={
                         filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000 ? '!' : 0
-                      }
-                      color="primary"
-                      variant="dot"
+                      } 
+                      color="primary" 
+                      variant="dot" 
                     />
                   }
                   sx={{
@@ -531,14 +531,14 @@ function HomePage() {
                   onClose={() => setPriceAnchorEl(null)}
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                  PaperProps={{
-                    sx: {
-                      p: 3,
-                      width: 320,
-                      borderRadius: 4,
-                      mt: 1,
-                      boxShadow: theme.shadows[10]
-                    }
+                  PaperProps={{ 
+                    sx: { 
+                      p: 3, 
+                      width: 320, 
+                      borderRadius: 4, 
+                      mt: 1, 
+                      boxShadow: theme.shadows[10] 
+                    } 
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={700} gutterBottom>
@@ -572,9 +572,9 @@ function HomePage() {
                         <SortIcon fontSize="small" />
                       </InputAdornment>
                     }
-                    sx={{
-                      borderRadius: 3,
-                      bgcolor: alpha(theme.palette.background.paper, 0.5)
+                    sx={{ 
+                      borderRadius: 3, 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
                     }}
                   >
                     {FILTER_OPTIONS.sortBy.map(option => (
@@ -591,11 +591,11 @@ function HomePage() {
                 <Button
                   color="error"
                   onClick={clearFilters}
-                  sx={{
-                    minWidth: 56,
-                    height: 56,
-                    borderRadius: 3,
-                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`
+                  sx={{ 
+                    minWidth: 56, 
+                    height: 56, 
+                    borderRadius: 3, 
+                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}` 
                   }}
                 >
                   <RestartAltIcon />
@@ -617,15 +617,26 @@ function HomePage() {
           </FilterBar>
         </motion.div>
 
-        {/* Grille de voitures */}
-        <Grid container spacing={3} alignItems="stretch">
+        {/* Grille de voitures avec CSS Grid */}
+        <Box 
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '24px',
+            width: '100%',
+            '@media (max-width: 600px)': {
+              gridTemplateColumns: '1fr',
+              gap: '16px'
+            }
+          }}
+        >
           <AnimatePresence>
             {paginatedCars.map((car, index) => {
               const imageUrl = car.photos?.[0] ||
                 `https://source.unsplash.com/random/800x600/?${car.make}+${car.model}`;
 
               return (
-                <Grid item xs={12} sm={6} md={4} key={car.id}>
+                <Box key={car.id}>
                   <Zoom in timeout={300 + (index % 3) * 100}>
                     <CarCard
                       component={motion.div}
@@ -634,23 +645,22 @@ function HomePage() {
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.4 }}
                     >
-                      <Link
-                        to={`/cars/${car.id}`}
-                        style={{
-                          textDecoration: 'none',
+                      <Link 
+                        to={`/cars/${car.id}`} 
+                        style={{ 
+                          textDecoration: 'none', 
                           color: 'inherit',
                           display: 'flex',
                           flexDirection: 'column',
-                          height: '100%', // Assure que la carte prend toute la hauteur de l'élément Grid.
-                          flexGrow: 1 // Ajout crucial pour que le lien s'étire dans la CarCard
+                          height: '100%'
                         }}
                       >
                         {/* Image */}
                         <Box sx={{ position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-                          <CarImage
+                          <CarImage 
                             className="car-image"
-                            image={imageUrl}
-                            title={`${car.make} ${car.model}`}
+                            image={imageUrl} 
+                            title={`${car.make} ${car.model}`} 
                           />
                           <PriceBadge className="price-badge">
                             {formatPrice(car.price)}
@@ -669,17 +679,7 @@ function HomePage() {
                         </Box>
 
                         {/* Contenu */}
-                        <CardContent
-                          sx={{
-                            flexGrow: 1,
-                            p: 2.5,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            flex: 1,
-                            // *** Correction pour uniformité : Hauteur minimale forcée ***
-                            minHeight: 220, // Valeur estimée pour garantir l'espace pour le titre sur 2 lignes + 3 specs + bouton
-                          }}
-                        >
+                        <CardContent sx={{ flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column' }}>
                           {/* Titre */}
                           <Typography
                             variant="h6"
@@ -688,7 +688,7 @@ function HomePage() {
                               lineHeight: 1.3,
                               mb: 2,
                               fontSize: '1.2rem',
-                              height: '3.2em', // 2 lignes de texte
+                              height: '3.2em',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               display: '-webkit-box',
@@ -758,11 +758,11 @@ function HomePage() {
                       </Link>
                     </CarCard>
                   </Zoom>
-                </Grid>
+                </Box>
               );
             })}
           </AnimatePresence>
-        </Grid>
+        </Box>
 
         {/* Pagination */}
         {pageCount > 1 && (
@@ -797,10 +797,10 @@ function HomePage() {
             <Typography color="text.secondary" mb={4} fontSize="1.1rem">
               Essayez de modifier vos filtres pour voir plus de résultats.
             </Typography>
-            <Button
-              variant="contained"
-              onClick={clearFilters}
-              startIcon={<RestartAltIcon />}
+            <Button 
+              variant="contained" 
+              onClick={clearFilters} 
+              startIcon={<RestartAltIcon />} 
               size="large"
             >
               Réinitialiser la recherche
@@ -812,4 +812,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default HomePage

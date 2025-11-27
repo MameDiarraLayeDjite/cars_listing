@@ -22,12 +22,20 @@ const Footer = () => {
                 borderTop: `1px solid ${theme.palette.divider}`,
                 position: 'relative',
                 overflow: 'hidden',
+                width: '100%',
+                maxWidth: '100%',
+                mx: 'auto',
+                px: { xs: 3, sm: 4, md: 6, lg: 8, xl: 10 },
             }}
         >
-            <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 } }}>
-                <Grid container spacing={6}>
+            <Box sx={{
+                maxWidth: '100%',
+                mx: 'auto',
+                px: { xs: 0, sm: 2, md: 3 }
+            }}>
+                <Grid container spacing={6} justifyContent="center">
                     {/* Brand Column */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={4} xl={3}>
                         <Box display="flex" alignItems="center" gap={1} mb={2}>
                             <DirectionsCarIcon color="primary" sx={{ fontSize: 32 }} />
                             <Typography
@@ -40,7 +48,7 @@ const Footer = () => {
                                     WebkitTextFillColor: 'transparent',
                                 }}
                             >
-                                AutoMarket
+                                SarayaAutoSales
                             </Typography>
                         </Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 300, lineHeight: 1.8 }}>
@@ -63,7 +71,7 @@ const Footer = () => {
                     </Grid>
 
                     {/* Quick Links */}
-                    <Grid item xs={6} sm={4} md={2}>
+                    <Grid item xs={6} sm={4} md={2} xl={2}>
                         <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
                             Navigation
                         </Typography>
@@ -87,7 +95,7 @@ const Footer = () => {
                     </Grid>
 
                     {/* Services */}
-                    <Grid item xs={6} sm={4} md={2}>
+                    <Grid item xs={6} sm={4} md={2} xl={2}>
                         <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
                             Services
                         </Typography>
@@ -111,7 +119,7 @@ const Footer = () => {
                     </Grid>
 
                     {/* Contact Info */}
-                    <Grid item xs={12} sm={4} md={4}>
+                    <Grid item xs={12} sm={4} md={4} xl={3}>
                         <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
                             Contactez-nous
                         </Typography>
@@ -132,18 +140,25 @@ const Footer = () => {
                             <Box display="flex" gap={2}>
                                 <EmailIcon color="primary" fontSize="small" sx={{ mt: 0.5 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    contact@automarket.fr
+                                    contact@SarayaAutoSales.fr
                                 </Typography>
                             </Box>
                         </Stack>
                     </Grid>
                 </Grid>
 
-                <Divider sx={{ my: 4 }} />
+                <Divider sx={{ my: 4, mx: { xs: 0, sm: 2, md: 3 } }} />
 
-                <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" gap={2}>
+                <Box
+                    display="flex"
+                    flexDirection={{ xs: 'column', sm: 'row' }}
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={2}
+                    sx={{ px: { xs: 0, sm: 2, md: 3 } }}
+                >
                     <Typography variant="body2" color="text.secondary">
-                        © {new Date().getFullYear()} AutoMarket. Tous droits réservés.
+                        © {new Date().getFullYear()} SarayaAutoSales. Tous droits réservés.
                     </Typography>
                     <Stack direction="row" spacing={3}>
                         <Link href="#" color="text.secondary" underline="hover" variant="body2">
