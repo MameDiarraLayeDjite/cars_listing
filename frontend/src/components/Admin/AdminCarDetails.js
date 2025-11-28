@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     Box,
     Container,
@@ -77,6 +78,7 @@ const NavButton = styled(IconButton)(({ theme }) => ({
 }));
 
 function AdminCarDetails() {
+    const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -94,7 +96,7 @@ function AdminCarDetails() {
                 setCar(response.data);
                 setCurrentPhotoIndex(0);
             } catch (err) {
-                setError('Voiture introuvable.');
+                setError(t('car.details.notFound'));
             } finally {
                 setLoading(false);
             }
@@ -128,7 +130,7 @@ function AdminCarDetails() {
             await api.delete(`/cars/${id}`);
             navigate('/admin/dashboard');
         } catch {
-            alert('Erreur lors de la suppression.');
+            alert(t('admin.dashboard.deleteError'));
         }
     };
 
@@ -153,14 +155,14 @@ function AdminCarDetails() {
         return (
             <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
                 <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
-                    {error || 'Voiture introuvable.'}
+                    {error || t('car.details.notFound')}
                 </Alert>
                 <Button
                     variant="contained"
                     startIcon={<DashboardIcon />}
                     onClick={() => navigate('/admin/dashboard')}
                 >
-                    Retour au tableau de bord
+                    {t('common.back')}
                 </Button>
             </Container>
         );
@@ -190,7 +192,7 @@ function AdminCarDetails() {
                                 backgroundClip: 'text',
                             }}
                         >
-                            Détails du véhicule
+                            {t('admin.carDetails.title')}
                         </Typography>
                         <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 500 }}>
                             {fullName}
@@ -210,7 +212,7 @@ function AdminCarDetails() {
                             },
                         }}
                     >
-                        Retour au tableau de bord
+                        {t('common.back')}
                     </Button>
                 </Stack>
             </Box>
@@ -232,14 +234,14 @@ function AdminCarDetails() {
                     <>
                         <NavButton
                             onClick={prevPhoto}
-                            aria-label="Photo précédente"
+                            aria-label={t('car.details.previousPhoto')}
                             sx={{ left: 16 }}
                         >
                             <ChevronLeftIcon />
                         </NavButton>
                         <NavButton
                             onClick={nextPhoto}
-                            aria-label="Photo suivante"
+                            aria-label={t('car.details.nextPhoto')}
                             sx={{ right: 16 }}
                         >
                             <ChevronRightIcon />
@@ -292,7 +294,7 @@ function AdminCarDetails() {
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                                 <Chip
-                                    label={car.condition === 'new' ? 'Neuf' : 'Occasion'}
+                                    label={car.condition === 'new' ? t('car.condition.new') : t('car.condition.used')}
                                     color={car.condition === 'new' ? 'primary' : 'secondary'}
                                     sx={{ fontWeight: 600 }}
                                 />
@@ -318,7 +320,7 @@ function AdminCarDetails() {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <SpeedIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Kilométrage
+                                        {t('car.mileage')}
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>
                                         {car.mileage?.toLocaleString()} km
@@ -329,7 +331,7 @@ function AdminCarDetails() {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <LocalGasStationIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Carburant
+                                        {t('car.fuel')}
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>
                                         {car.fuelType || car.fuel_type || 'N/C'}
@@ -340,7 +342,7 @@ function AdminCarDetails() {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <SettingsIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Transmission
+                                        {t('car.transmission.label')}
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>
                                         {car.transmission || 'N/C'}
@@ -351,7 +353,7 @@ function AdminCarDetails() {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <LocationOnIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Localisation
+                                        {t('car.location')}
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>
                                         {car.location_city || 'N/C'}
@@ -367,7 +369,7 @@ function AdminCarDetails() {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <DirectionsCarIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Cylindres
+                                        {t('car.cylinders')}
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>
                                         {car.cylinders || 'N/C'}
@@ -378,7 +380,7 @@ function AdminCarDetails() {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <DirectionsCarIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Marque
+                                        {t('admin.createCar.make')}
                                     </Typography>
                                     <Typography variant="h6" fontWeight={700}>
                                         {car.make}
@@ -392,7 +394,7 @@ function AdminCarDetails() {
                                 <Divider sx={{ my: 3 }} />
                                 <Box>
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Numéro VIN
+                                        {t('admin.createCar.vin')}
                                     </Typography>
                                     <Typography variant="body1" fontWeight={600} sx={{ fontFamily: 'monospace' }}>
                                         {car.vin}
@@ -419,7 +421,7 @@ function AdminCarDetails() {
                             }}
                         >
                             <Typography variant="body2" sx={{ opacity: 0.9, mb: 1 }}>
-                                Prix de vente
+                                {t('car.details.salePrice')}
                             </Typography>
                             <Typography
                                 variant="h3"
@@ -434,7 +436,7 @@ function AdminCarDetails() {
                         </Box>
 
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 2 }}>
-                            Actions administrateur
+                            {t('admin.dashboard.actions')}
                         </Typography>
 
                         <Stack spacing={2}>
@@ -454,7 +456,7 @@ function AdminCarDetails() {
                                         : 'linear-gradient(135deg, #FF8C61 0%, #FFB84D 100%)',
                                 }}
                             >
-                                Modifier ce véhicule
+                                {t('admin.editCar.title')}
                             </Button>
 
                             <Button
@@ -471,7 +473,7 @@ function AdminCarDetails() {
                                     textTransform: 'none',
                                 }}
                             >
-                                Supprimer ce véhicule
+                                {t('admin.dashboard.delete')}
                             </Button>
 
                             <Divider sx={{ my: 2 }} />
@@ -489,7 +491,7 @@ function AdminCarDetails() {
                                     textTransform: 'none',
                                 }}
                             >
-                                Retour au tableau de bord
+                                {t('common.back')}
                             </Button>
                         </Stack>
                     </DashboardCard>
@@ -499,9 +501,9 @@ function AdminCarDetails() {
                 open={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Supprimer le véhicule ?"
-                message="Êtes-vous sûr de vouloir supprimer cette voiture ? Cette action est irréversible."
-                confirmText="Supprimer"
+                title={t('admin.dashboard.delete') + "?"}
+                message={t('admin.dashboard.confirmDelete')}
+                confirmText={t('admin.dashboard.delete')}
             />
         </Container>
     );

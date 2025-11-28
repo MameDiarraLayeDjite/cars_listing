@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -117,8 +118,8 @@ const ThumbnailImage = styled(Box)(({ theme, active }) => ({
   borderRadius: 12,
   overflow: 'hidden',
   cursor: 'pointer',
-  border: active 
-    ? `3px solid ${theme.palette.primary.main}` 
+  border: active
+    ? `3px solid ${theme.palette.primary.main}`
     : `2px solid ${alpha(theme.palette.divider, 0.2)}`,
   transition: 'all 0.3s ease',
   position: 'relative',
@@ -222,6 +223,7 @@ function CarDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
+  const { t } = useTranslation();
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -237,7 +239,7 @@ function CarDetails() {
         setCar(response.data);
         setCurrentPhotoIndex(0);
       } catch (err) {
-        setError('Voiture introuvable.');
+        setError(t('car.details.notFound'));
       } finally {
         setLoading(false);
       }
@@ -281,14 +283,14 @@ function CarDetails() {
     return (
       <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
         <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
-          {error || 'Voiture introuvable.'}
+          {error || t('car.details.notFound')}
         </Alert>
         <Button
           variant="contained"
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/')} 
         >
-          Retour à l'accueil
+          {t('common.backToHome')} 
         </Button>
       </Container>
     );
@@ -302,7 +304,7 @@ function CarDetails() {
       {/* Back Button */}
       <Button
         startIcon={<ArrowBackIcon />}
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(-1)} 
         sx={{
           mb: 4,
           fontWeight: 600,
@@ -314,7 +316,7 @@ function CarDetails() {
           },
         }}
       >
-        Retour
+      {t('common.back')} 
       </Button>
 
       <Grid container spacing={4}>
@@ -336,7 +338,7 @@ function CarDetails() {
                         e.stopPropagation();
                         setCurrentPhotoIndex((idx) => (idx === 0 ? photos.length - 1 : idx - 1));
                       }}
-                      aria-label="Photo précédente"
+                      aria-label={t('car.details.previousPhoto')}
                       sx={{ left: 20 }}
                     >
                       <ChevronLeftIcon sx={{ fontSize: 32 }} />
@@ -346,7 +348,7 @@ function CarDetails() {
                         e.stopPropagation();
                         setCurrentPhotoIndex((idx) => (idx === photos.length - 1 ? 0 : idx + 1));
                       }}
-                      aria-label="Photo suivante"
+                      aria-label={t('car.details.nextPhoto')}
                       sx={{ right: 20 }}
                     >
                       <ChevronRightIcon sx={{ fontSize: 32 }} />
@@ -433,7 +435,7 @@ function CarDetails() {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   <Chip
-                    label={car.condition === 'new' ? 'Neuf' : 'Occasion'}
+                    label={car.condition === 'new' ? t('car.condition.new') : t('car.condition.used')}
                     color={car.condition === 'new' ? 'primary' : 'secondary'}
                     sx={{ fontWeight: 600, fontSize: '0.9rem' }}
                   />
@@ -475,7 +477,7 @@ function CarDetails() {
                   }}
                 >
                   <Typography variant="body1" sx={{ opacity: 0.95, mb: 1.5, fontWeight: 500 }}>
-                    Prix de vente
+                    {t('car.details.salePrice')}
                   </Typography>
                   <Typography
                     variant="h2"
@@ -511,7 +513,7 @@ function CarDetails() {
                         },
                       }}
                     >
-                      Contacter le vendeur
+                      {t('car.details.contactSeller')}
                     </Button>
 
                     <Button
@@ -535,7 +537,7 @@ function CarDetails() {
                         }
                       }}
                     >
-                      Demander un essai
+                      {t('car.details.requestTest')}
                     </Button>
                   </Stack>
                 </Box>
@@ -543,7 +545,7 @@ function CarDetails() {
                 {car.location_branch && (
                   <Box sx={{ p: 3, pt: 2.5 }}>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
-                      Véhicule disponible à :
+                      {t('car.details.availableAt')}
                     </Typography>
                     <Box display="flex" alignItems="flex-start" gap={1.5}>
                       <LocationOnIcon color="primary" fontSize="medium" sx={{ mt: 0.3 }} />
@@ -568,9 +570,9 @@ function CarDetails() {
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
                   <Tabs value={tabValue} onChange={handleTabChange} aria-label="car details tabs">
-                    <StyledTab label="Informations" />
-                    <StyledTab label="Description" />
-                    <StyledTab label="Caractéristiques" />
+                    <StyledTab label={t('car.details.info')} />
+                    <StyledTab label={t('car.details.description')} />
+                    <StyledTab label={t('car.details.specifications')} />
                   </Tabs>
                 </Box>
 
@@ -580,7 +582,7 @@ function CarDetails() {
                     <SpeedIcon color="primary" sx={{ fontSize: 36 }} />
                     <Box>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                        Kilométrage
+                        {t('car.mileage')}
                       </Typography>
                       <Typography variant="h6" fontWeight={700}>
                         {car.mileage?.toLocaleString()} km
@@ -596,31 +598,31 @@ function CarDetails() {
                       <SettingsIcon color="primary" sx={{ fontSize: 36 }} />
                       <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                          Transmission
+                          {t('car.transmission.label')}
                         </Typography>
                         <Typography variant="h6" fontWeight={700}>
                           {car.transmission || 'N/C'}
                         </Typography>
                       </Box>
                     </FeatureBox>
-                    
+
                     <FeatureBox>
                       <LocalGasStationIcon color="primary" sx={{ fontSize: 36 }} />
                       <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                          Carburant
+                          {t('car.fuel')}
                         </Typography>
                         <Typography variant="h6" fontWeight={700}>
                           {car.fuelType || car.fuel_type || 'N/C'}
                         </Typography>
                       </Box>
                     </FeatureBox>
-                    
+
                     <FeatureBox>
                       <DirectionsCarIcon color="primary" sx={{ fontSize: 36 }} />
                       <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                          Cylindres
+                          {t('car.cylinders')}
                         </Typography>
                         <Typography variant="h6" fontWeight={700}>
                           {car.cylinders || 'N/C'}
@@ -633,7 +635,7 @@ function CarDetails() {
                 {/* Tab 3: Caractéristiques (Everything else) */}
                 <TabPanel value={tabValue} index={2}>
                   <Stack spacing={2.5}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                       <PaletteIcon color="primary" sx={{ fontSize: 28 }} />
                       <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
@@ -655,13 +657,13 @@ function CarDetails() {
                           {car.interior || 'N/C'}
                         </Typography>
                       </Box>
-                    </Box>
+                    </Box> */}
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                       <LocationOnIcon color="primary" sx={{ fontSize: 28 }} />
                       <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-                          Localisation
+                          {t('car.location')}
                         </Typography>
                         <Typography variant="subtitle1" fontWeight={600}>
                           {car.location_city || 'N/C'}
@@ -673,7 +675,7 @@ function CarDetails() {
                       <ConfirmationNumberIcon color="primary" sx={{ fontSize: 28 }} />
                       <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-                          Stock #
+                          {t('car.details.stockNumber')}
                         </Typography>
                         <Typography variant="subtitle1" fontWeight={600}>
                           {car.stock_number || 'N/C'}
@@ -687,12 +689,12 @@ function CarDetails() {
                       <Typography variant="body2" color="text.secondary" sx={{ minWidth: 60, fontSize: '0.85rem' }}>
                         VIN:
                       </Typography>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          fontFamily: 'monospace', 
-                          bgcolor: 'action.hover', 
-                          px: 1.5, 
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontFamily: 'monospace',
+                          bgcolor: 'action.hover',
+                          px: 1.5,
                           py: 0.5,
                           borderRadius: 1,
                           fontSize: '0.85rem',

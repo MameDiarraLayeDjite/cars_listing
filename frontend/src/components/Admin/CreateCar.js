@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -65,6 +66,7 @@ const initialFormState = {
 };
 
 function CreateCar() {
+  const { t } = useTranslation();
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -200,7 +202,7 @@ function CreateCar() {
       await api.post('/cars', carData);
       navigate('/admin/dashboard');
     } catch (err) {
-      setErrors(['Erreur lors de la création de la voiture.']);
+      setErrors([t('admin.createCar.createError')]);
     } finally {
       setSubmitting(false);
     }
@@ -223,7 +225,7 @@ function CreateCar() {
           },
         }}
       >
-        Retour au tableau de bord
+        {t('common.back')}
       </Button>
 
       <DashboardCard>
@@ -245,7 +247,7 @@ function CreateCar() {
                 backgroundClip: 'text',
               }}
             >
-              Ajouter une nouvelle voiture
+              {t('admin.createCar.title')}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
               Remplissez tous les champs pour ajouter un véhicule à l'inventaire
@@ -268,13 +270,13 @@ function CreateCar() {
             {/* Informations de base */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Informations de base
+                {t('admin.createCar.basicInfo')}
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Année"
+                    label={t('admin.createCar.year')}
                     name="year"
                     type="number"
                     value={form.year}
@@ -286,7 +288,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Marque"
+                    label={t('admin.createCar.make')}
                     name="make"
                     value={form.make}
                     onChange={handleChange}
@@ -296,7 +298,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Modèle"
+                    label={t('admin.createCar.model')}
                     name="model"
                     value={form.model}
                     onChange={handleChange}
@@ -306,7 +308,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Série"
+                    label={t('admin.createCar.series')} // Assuming a key exists or falling back to hardcoded if needed, but sticking to plan
                     name="series"
                     value={form.series}
                     onChange={handleChange}
@@ -319,13 +321,13 @@ function CreateCar() {
             {/* Spécifications techniques */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Spécifications techniques
+                {t('admin.createCar.specifications')}
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Kilométrage"
+                    label={t('admin.createCar.mileage')}
                     name="mileage"
                     type="number"
                     value={form.mileage}
@@ -340,7 +342,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Transmission"
+                    label={t('admin.createCar.transmission')}
                     name="transmission"
                     value={form.transmission}
                     onChange={handleChange}
@@ -351,7 +353,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Type de carburant"
+                    label={t('admin.createCar.fuelType')}
                     name="fuel_type"
                     value={form.fuel_type}
                     onChange={handleChange}
@@ -362,7 +364,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Cylindres"
+                    label={t('admin.createCar.cylinders')}
                     name="cylinders"
                     type="number"
                     value={form.cylinders}
@@ -394,13 +396,13 @@ function CreateCar() {
             {/* Localisation et prix */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Localisation et prix
+                {t('admin.createCar.pricing')} & {t('admin.createCar.location')}
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Ville"
+                    label={t('admin.createCar.location')}
                     name="location_city"
                     value={form.location_city}
                     onChange={handleChange}
@@ -420,7 +422,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Prix de vente"
+                    label={t('admin.createCar.salePrice')}
                     name="sale_price"
                     type="number"
                     value={form.sale_price}
@@ -435,7 +437,7 @@ function CreateCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Numéro de stock"
+                    label={t('admin.createCar.stockNumber')}
                     name="stock_number"
                     value={form.stock_number}
                     onChange={handleChange}
@@ -445,7 +447,7 @@ function CreateCar() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="VIN"
+                    label={t('admin.createCar.vin')}
                     name="vin"
                     value={form.vin}
                     onChange={handleChange}
@@ -458,7 +460,7 @@ function CreateCar() {
             {/* Photos */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Photos
+                {t('admin.createCar.photos')}
               </Typography>
               <Button
                 variant="outlined"
@@ -478,7 +480,7 @@ function CreateCar() {
                   },
                 }}
               >
-                {uploading ? 'Téléversement en cours...' : 'Ajouter des photos'}
+                {uploading ? t('common.loading') : t('admin.createCar.uploadPhotos')}
                 <input
                   type="file"
                   accept="image/*"
@@ -579,7 +581,7 @@ function CreateCar() {
                   },
                 }}
               >
-                {submitting ? 'Création en cours...' : 'Créer la voiture'}
+                {submitting ? t('admin.createCar.saving') : t('admin.createCar.save')}
               </Button>
               <Button
                 variant="outlined"
@@ -599,7 +601,7 @@ function CreateCar() {
                   },
                 }}
               >
-                Annuler
+                {t('admin.createCar.cancel')}
               </Button>
             </Stack>
           </Box>

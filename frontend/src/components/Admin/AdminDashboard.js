@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -116,6 +117,7 @@ TablePaginationActions.propTypes = {
 };
 
 function AdminDashboard() {
+  const { t } = useTranslation();
   const [cars, setCars] = useState([]);
   const [searchName, setSearchName] = useState('');
   const [searchVin, setSearchVin] = useState('');
@@ -130,7 +132,7 @@ function AdminDashboard() {
     total: 0,
     totalPages: 0
   });
-  
+
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -138,13 +140,13 @@ function AdminDashboard() {
     try {
       setLoading(true);
       const params = {};
-      
+
       if (filters.name) params.name = filters.name;
       if (filters.vin) params.vin = filters.vin;
       if (filters.location) params.location = filters.location;
 
       const response = await carApi.getCars(params, page + 1, rowsPerPage);
-      
+
       setCars(response.data);
       setPagination(prev => ({
         ...prev,
@@ -153,10 +155,10 @@ function AdminDashboard() {
         page,
         rowsPerPage
       }));
-      
+
     } catch (err) {
       console.error('Error fetching cars:', err);
-      setError('Erreur lors du chargement des voitures.');
+      setError(t('common.errorLoadingCars'));
     } finally {
       setLoading(false);
     }
@@ -169,12 +171,12 @@ function AdminDashboard() {
   function handleSearch(e) {
     e.preventDefault();
     fetchCars(
-      { 
-        name: searchName.trim(), 
+      {
+        name: searchName.trim(),
         vin: searchVin.trim(),
-        location: searchLocation.trim() 
-      }, 
-      0, 
+        location: searchLocation.trim()
+      },
+      0,
       pagination.rowsPerPage
     );
   }
@@ -183,7 +185,7 @@ function AdminDashboard() {
     setCarToDeleteId(id);
     setDeleteModalOpen(true);
   };
-  
+
   const handleChangePage = (event, newPage) => {
     fetchCars(
       { name: searchName.trim(), vin: searchVin.trim() },
@@ -200,7 +202,7 @@ function AdminDashboard() {
       newRowsPerPage
     );
   };
-  
+
   const handleRefresh = () => {
     setSearchName('');
     setSearchVin('');
@@ -215,7 +217,7 @@ function AdminDashboard() {
       await api.delete(`/cars/${carToDeleteId}`);
       setCars((prev) => prev.filter((car) => car.id !== carToDeleteId));
     } catch {
-      alert('Erreur lors de la suppression.');
+      alert(t('admin.dashboard.deleteError'));
     } finally {
       setCarToDeleteId(null);
     }
@@ -257,10 +259,10 @@ function AdminDashboard() {
             backgroundClip: 'text',
           }}
         >
-          Tableau de bord
+          {t('admin.dashboard.title')}
         </Typography>
         <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 500 }}>
-          Gérez votre inventaire de véhicules
+          {t('admin.dashboard.welcome')}
         </Typography>
       </Box>
 
@@ -282,12 +284,12 @@ function AdminDashboard() {
                 : 'linear-gradient(135deg, #FF8C61 0%, #FFB84D 100%)',
             }}
           >
-            Ajouter une voiture
+            {t('admin.dashboard.addNewCar')}
           </Button>
 
           <Chip
             icon={<DirectionsCarIcon />}
-            label={`${pagination.total} véhicule${pagination.total > 1 ? 's' : ''}`}
+            label={t('filters.vehiclesCount', { count: pagination.total })}
             color="primary"
             sx={{ fontWeight: 600, px: 2, py: 2.5 }}
           />
@@ -300,7 +302,7 @@ function AdminDashboard() {
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
             <TextField
               fullWidth
-              placeholder="Recherche par nom..."
+              placeholder={t('admin.dashboard.searchPlaceholder')}
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               InputProps={{
@@ -309,7 +311,7 @@ function AdminDashboard() {
             />
             <TextField
               fullWidth
-              placeholder="Recherche par VIN..."
+              placeholder={t('admin.createCar.vin')}
               value={searchVin}
               onChange={(e) => setSearchVin(e.target.value)}
               InputProps={{
@@ -318,7 +320,7 @@ function AdminDashboard() {
             />
             <TextField
               fullWidth
-              placeholder="Recherche par localisation..."
+              placeholder={t('admin.createCar.location')}
               value={searchLocation}
               onChange={(e) => setSearchLocation(e.target.value)}
               InputProps={{
@@ -341,7 +343,7 @@ function AdminDashboard() {
                 fontWeight: 600,
               }}
             >
-              Rechercher
+              {t('filters.search')}
             </Button>
             <IconButton
               onClick={handleRefresh}
@@ -350,7 +352,7 @@ function AdminDashboard() {
                 border: 1,
                 borderColor: 'divider',
               }}
-              title="Rafraîchir"
+              title={t('filters.reset')}
             >
               <RefreshIcon />
             </IconButton>
@@ -370,7 +372,7 @@ function AdminDashboard() {
         <DashboardCard sx={{ p: 8, textAlign: 'center' }}>
           <DirectionsCarIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary">
-            Aucune voiture trouvée
+            {t('admin.dashboard.noCars')}
           </Typography>
         </DashboardCard>
       ) : (
@@ -379,15 +381,15 @@ function AdminDashboard() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Stock #</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Véhicule</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>VIN</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Kilométrage</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Carburant</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Transmission</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Prix</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.createCar.stockNumber')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('footer.vehicles')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.createCar.vin')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.createCar.mileage')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.createCar.fuelType')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.createCar.transmission')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.createCar.price')}</TableCell>
                   <TableCell sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Statut</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>Actions</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t('admin.dashboard.actions')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -420,9 +422,9 @@ function AdminDashboard() {
                         <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
                           {fullName}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        {/* <Typography variant="caption" color="text.secondary">
                           {car.body_type || 'N/A'}
-                        </Typography>
+                        </Typography> */}
                       </TableCell>
                       <TableCell>
                         <Typography
@@ -498,7 +500,7 @@ function AdminDashboard() {
                                 backgroundColor: alpha(theme.palette.info.main, 0.1),
                               },
                             }}
-                            title="Voir les détails"
+                            title={t('admin.dashboard.view')}
                           >
                             <VisibilityIcon fontSize="small" />
                           </IconButton>
@@ -511,7 +513,7 @@ function AdminDashboard() {
                                 backgroundColor: alpha(theme.palette.primary.main, 0.1),
                               },
                             }}
-                            title="Modifier"
+                            title={t('admin.dashboard.edit')}
                           >
                             <EditIcon fontSize="small" />
                           </IconButton>
@@ -524,7 +526,7 @@ function AdminDashboard() {
                                 backgroundColor: alpha(theme.palette.error.main, 0.1),
                               },
                             }}
-                            title="Supprimer"
+                            title={t('admin.dashboard.delete')}
                           >
                             <DeleteIcon fontSize="small" />
                           </IconButton>
@@ -566,9 +568,9 @@ function AdminDashboard() {
         open={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Supprimer le véhicule ?"
-        message="Êtes-vous sûr de vouloir supprimer cette voiture ? Cette action est irréversible."
-        confirmText="Supprimer"
+        title={t('admin.dashboard.delete') + "?"}
+        message={t('admin.dashboard.confirmDelete')}
+        confirmText={t('admin.dashboard.delete')}
       />
     </Container>
   );

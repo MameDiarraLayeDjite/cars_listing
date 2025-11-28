@@ -1,0 +1,253 @@
+{
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "adminLogin": "Admin Login",
+        "adminDashboard": "Admin Dashboard",
+        "logout": "Logout",
+        "brandName": "SarayaAutoSales"
+    },
+    "hero": {
+        "newArrivals": "🚗 New Arrivals",
+        "title1": "Automotive Excellence",
+        "title2": "Within Your Reach",
+        "subtitle": "Discover our exclusive collection of premium vehicles, rigorously inspected to offer you an unparalleled driving experience."
+    },
+    "filters": {
+        "search": "Search...",
+        "brand": "Brand",
+        "location": "Location",
+        "budget": "Budget",
+        "sortBy": "Sort by",
+        "priceRange": "Price Range",
+        "all": "All",
+        "reset": "Reset",
+        "vehiclesCount": "{{count}} Vehicles",
+        "sortOptions": {
+            "priceAsc": "Price: Low to High",
+            "priceDesc": "Price: High to Low",
+            "yearDesc": "Newest First",
+            "yearAsc": "Oldest First",
+            "mileageAsc": "Mileage: Low to High"
+        }
+    },
+    "car": {
+        "viewDetails": "View Details",
+        "mileage": "Mileage",
+        "fuel": "Fuel",
+        "cylinders": "Cylinders",
+        "location": "Location",
+        "transmission": {
+            "label": "Transmission",
+            "auto": "Automatic",
+            "manual": "Manual"
+        },
+        "fuelType": {
+            "essence": "Gasoline",
+            "diesel": "Diesel",
+            "electric": "Electric",
+            "hybrid": "Hybrid"
+        },
+        "condition": {
+            "new": "New",
+            "used": "Used"
+        },
+        "details": {
+            "notFound": "Car not found.",
+            "previousPhoto": "Previous Photo",
+            "nextPhoto": "Next Photo",
+            "fullscreen": "Fullscreen",
+            "salePrice": "Sale Price",
+            "contactSeller": "Contact Seller",
+            "requestTest": "Request Test Drive",
+            "availableAt": "Vehicle available at:",
+            "info": "Information",
+            "description": "Description",
+            "specifications": "Specifications",
+            "exteriorColor": "Exterior Color",
+            "interior": "Interior",
+            "stockNumber": "Stock #"
+        }
+    },
+    "admin": {
+        "login": {
+            "title": "Administrator Login",
+            "subtitle": "Access the dashboard",
+            "email": "Email",
+            "password": "Password",
+            "loginButton": "Login",
+            "loggingIn": "Logging in...",
+            "error": "Invalid email or password"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Welcome, Admin",
+            "totalCars": "Total Vehicles",
+            "addNewCar": "Add Vehicle",
+            "searchPlaceholder": "Search by brand, model...",
+            "noCars": "No vehicles available",
+            "loadingCars": "Loading vehicles...",
+            "actions": "Actions",
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete",
+            "confirmDelete": "Are you sure you want to delete this vehicle?",
+            "deleteSuccess": "Vehicle deleted successfully",
+            "deleteError": "Error deleting vehicle"
+        },
+        "createCar": {
+            "title": "Add New Vehicle",
+            "basicInfo": "Basic Information",
+            "specifications": "Specifications",
+            "pricing": "Pricing",
+            "photos": "Photos",
+            "make": "Make",
+            "model": "Model",
+            "year": "Year",
+            "price": "Price",
+            "salePrice": "Sale Price",
+            "mileage": "Mileage",
+            "fuelType": "Fuel Type",
+            "transmission": "Transmission",
+            "condition": "Condition",
+            "color": "Color",
+            "interior": "Interior",
+            "cylinders": "Cylinders",
+            "vin": "VIN",
+            "stockNumber": "Stock Number",
+            "location": "Location",
+            "uploadPhotos": "Upload Photos",
+            "dragDrop": "Drag & drop or click to select",
+            "save": "Save",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "createSuccess": "Vehicle created successfully",
+            "createError": "Error creating vehicle",
+            "required": "This field is required"
+        },
+        "editCar": {
+            "title": "Edit Vehicle",
+            "updateSuccess": "Vehicle updated successfully",
+            "updateError": "Error updating vehicle",
+            "update": "Update",
+            "updating": "Updating..."
+        },
+        "carDetails": {
+            "title": "Vehicle Details",
+            "generalInfo": "General Information",
+            "technicalSpecs": "Technical Specifications",
+            "pricingInfo": "Pricing Information",
+            "locationInfo": "Location",
+            "photoGallery": "Photo Gallery"
+        }
+    },
+    "common": {
+        "back": "Back",
+        "backToHome": "Back to Home",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "retry": "Retry",
+        "errorLoadingCars": "Unable to load vehicles. Please try again.",
+        "km": "km",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "view": "View",
+        "yes": "Yes",
+        "no": "No"
+    },
+    "footer": {
+        "description": "Your trusted partner for buying and selling exceptional vehicles. Quality, transparency, and customer satisfaction are our priorities.",
+        "navigation": "Navigation",
+        "services": "Services",
+        "contact": "Contact Us",
+        "vehicles": "Vehicles",
+        "buy": "Buy",
+        "sell": "Sell",
+        "tradeIn": "Trade-In",
+        "financing": "Financing",
+        "warranty": "Warranty",
+        "address": "Sicap Libere 4 Villa N°518,\nDakar Sénégal",
+        "phone": "+221 77 415 65 65",
+        "email": "info@saraya.tech",
+        "copyright": "©  {{year}} SarayaAutoSales. All rights reserved.",
+        "legal": "Legal Notice",
+        "privacy": "Privacy Policy",
+        "terms": "Terms & Conditions"
+    },
+    "about": {
+        "hero": {
+            "title": "About Us",
+            "subtitle": "Discover the story and values that make SarayaAutoSales your trusted partner"
+        },
+        "story": {
+            "title": "Our Story",
+            "content": "For over 15 years, SarayaAutoSales has established itself as a reference in the automotive sector. Our passion for excellence and commitment to customer satisfaction have enabled us to create a community of loyal customers."
+        },
+        "values": {
+            "title": "Our Values",
+            "quality": {
+                "title": "Quality",
+                "description": "Every vehicle is rigorously inspected"
+            },
+            "transparency": {
+                "title": "Transparency",
+                "description": "Clear prices with no hidden fees"
+            },
+            "service": {
+                "title": "Service",
+                "description": "Personalized support at every step"
+            }
+        }
+    },
+    "contact": {
+        "hero": {
+            "title": "Contact Us",
+            "subtitle": "Our team is here to answer all your questions",
+            "address": "Address"
+        },
+        "form": {
+            "title": "Send us a message",
+            "name": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "message": "Message",
+            "send": "Send",
+            "success": "Message sent successfully!",
+            "error": "Error sending message"
+        },
+        "info": {
+            "title": "Contact Information",
+            "hours": "Opening Hours",
+            "weekdays": "Mon - Fri: 9am - 6pm",
+            "saturday": "Sat: 10am - 4pm",
+            "sunday": "Sun: Closed"
+        }
+    },
+    "locations": {
+        "all": "All",
+        "paris": "Paris",
+        "lyon": "Lyon",
+        "marseille": "Marseille",
+        "toulouse": "Toulouse",
+        "bordeaux": "Bordeaux",
+        "lille": "Lille",
+        "nantes": "Nantes",
+        "strasbourg": "Strasbourg",
+        "nice": "Nice"
+    },
+    "brands": {
+        "all": "All",
+        "toyota": "Toyota",
+        "honda": "Honda",
+        "ford": "Ford",
+        "bmw": "BMW",
+        "mercedes": "Mercedes",
+        "audi": "Audi",
+        "volkswagen": "Volkswagen",
+        "peugeot": "Peugeot",
+        "renault": "Renault"
+    }
+}

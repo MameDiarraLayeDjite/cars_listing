@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Grid, Typography, Link, IconButton, Stack, Divider, useTheme, alpha } from '@mui/material';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -10,6 +11,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const Footer = () => {
+    const { t } = useTranslation();
     const theme = useTheme();
 
     return (
@@ -48,11 +50,11 @@ const Footer = () => {
                                     WebkitTextFillColor: 'transparent',
                                 }}
                             >
-                                SarayaAutoSales
+                                {t('nav.brandName')}
                             </Typography>
                         </Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 300, lineHeight: 1.8 }}>
-                            Votre partenaire de confiance pour l'achat et la vente de véhicules d'exception. Qualité, transparence et satisfaction client sont nos priorités.
+                            {t('footer.description')}
                         </Typography>
                         <Stack direction="row" spacing={1}>
                             <IconButton size="small" color="primary" sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
@@ -73,10 +75,10 @@ const Footer = () => {
                     {/* Quick Links */}
                     <Grid item xs={6} sm={4} md={2} xl={2}>
                         <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-                            Navigation
+                            {t('footer.navigation')}
                         </Typography>
                         <Stack spacing={1.5}>
-                            {['Accueil', 'Véhicules', 'Services', 'À propos', 'Contact'].map((item) => (
+                            {[t('nav.home'), t('footer.vehicles'), 'Services', t('nav.about'), t('nav.contact')].map((item) => (
                                 <Link
                                     key={item}
                                     href="#"
@@ -97,10 +99,10 @@ const Footer = () => {
                     {/* Services */}
                     <Grid item xs={6} sm={4} md={2} xl={2}>
                         <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-                            Services
+                            {t('footer.services')}
                         </Typography>
                         <Stack spacing={1.5}>
-                            {['Achat', 'Vente', 'Reprise', 'Financement', 'Garantie'].map((item) => (
+                            {[t('footer.buy'), t('footer.sell'), t('footer.tradeIn'), t('footer.financing'), t('footer.warranty')].map((item) => (
                                 <Link
                                     key={item}
                                     href="#"
@@ -121,26 +123,26 @@ const Footer = () => {
                     {/* Contact Info */}
                     <Grid item xs={12} sm={4} md={4} xl={3}>
                         <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-                            Contactez-nous
+                            {t('footer.contact')}
                         </Typography>
                         <Stack spacing={2}>
                             <Box display="flex" gap={2}>
                                 <LocationOnIcon color="primary" fontSize="small" sx={{ mt: 0.5 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    123 Avenue des Champs-Élysées<br />
-                                    75008 Paris, France
+                                    Sicap Libere 4 Villa N°5181,
+                                    Dakar Sénégal
                                 </Typography>
                             </Box>
                             <Box display="flex" gap={2}>
                                 <PhoneIcon color="primary" fontSize="small" sx={{ mt: 0.5 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    +33 1 23 45 67 89
+                                    +221 77 415 65 65
                                 </Typography>
                             </Box>
                             <Box display="flex" gap={2}>
                                 <EmailIcon color="primary" fontSize="small" sx={{ mt: 0.5 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    contact@SarayaAutoSales.fr
+                                    info@saraya.tech
                                 </Typography>
                             </Box>
                         </Stack>
@@ -158,17 +160,17 @@ const Footer = () => {
                     sx={{ px: { xs: 0, sm: 2, md: 3 } }}
                 >
                     <Typography variant="body2" color="text.secondary">
-                        © {new Date().getFullYear()} SarayaAutoSales. Tous droits réservés.
+                        {t('footer.copyright', { year: new Date().getFullYear() })}
                     </Typography>
                     <Stack direction="row" spacing={3}>
                         <Link href="#" color="text.secondary" underline="hover" variant="body2">
-                            Mentions légales
+                            {t('footer.legal')}
                         </Link>
                         <Link href="#" color="text.secondary" underline="hover" variant="body2">
-                            Politique de confidentialité
+                            {t('footer.privacy')}
                         </Link>
                         <Link href="#" color="text.secondary" underline="hover" variant="body2">
-                            CGV
+                            {t('footer.terms')}
                         </Link>
                     </Stack>
                 </Box>

@@ -20,6 +20,7 @@ import {
   ListItemIcon,
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useThemeMode } from '../../context/ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -28,8 +29,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const { currentUser, logout } = useAuth();
   const { mode, toggleTheme } = useThemeMode();
   const theme = useTheme();
@@ -69,15 +72,15 @@ const Navbar = () => {
   };
 
   const menuItems = [
-    { label: 'Accueil', path: '/' },
-    { label: 'À propos', path: '/about' },
-    { label: 'Contact', path: '/contact' },
+    { label: t('nav.home'), path: '/' },
+    { label: t('nav.about'), path: '/about' },
+    { label: t('nav.contact'), path: '/contact' },
   ];
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        SarayaAutoSales
+        {t('nav.brandName')}
       </Typography>
       <Divider />
       <List>
@@ -109,7 +112,7 @@ const Navbar = () => {
                 px: 3,
               }}
             >
-              <ListItemText primary="Connexion Admin" />
+              <ListItemText primary={t('nav.adminLogin')} />
             </Button>
           </ListItem>
         )}
@@ -150,7 +153,7 @@ const Navbar = () => {
               flexGrow: 1,
             }}
           >
-            SarayaAutoSales
+            {t('nav.brandName')}
           </Typography>
 
           {/* Mobile Menu Icon */}
@@ -183,7 +186,7 @@ const Navbar = () => {
               textDecoration: 'none',
             }}
           >
-            SarayaAutoSales
+            {t('nav.brandName')}
           </Typography>
 
           {/* Desktop Menu */}
@@ -210,6 +213,8 @@ const Navbar = () => {
             <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
               {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
             </IconButton>
+
+            <LanguageSwitcher />
 
             {currentUser ? (
               <Box sx={{ flexGrow: 0, ml: 2 }}>
@@ -244,14 +249,14 @@ const Navbar = () => {
                       <ListItemIcon>
                         <DashboardIcon fontSize="small" />
                       </ListItemIcon>
-                      Dashboard Admin
+                      {t('nav.adminDashboard')}
                     </MenuItem>
                   )}
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                       <ExitToAppIcon fontSize="small" />
                     </ListItemIcon>
-                    Déconnexion
+                    {t('nav.logout')}
                   </MenuItem>
                 </Menu>
               </Box>
@@ -262,7 +267,7 @@ const Navbar = () => {
                 variant="contained"
                 sx={{ ml: 2, borderRadius: 2 }}
               >
-                Connexion Admin
+                {t('nav.adminLogin')}
               </Button>
             )}
           </Box>

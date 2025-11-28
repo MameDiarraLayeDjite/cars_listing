@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -38,6 +39,7 @@ const LoginCard = styled(Card)(({ theme }) => ({
 }));
 
 function AdminLogin() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +52,7 @@ function AdminLogin() {
     e.preventDefault();
     setError(null);
     if (!username.trim() || !password.trim()) {
-      setError('Veuillez remplir tous les champs');
+      setError(t('admin.createCar.required'));
       return;
     }
     try {
@@ -59,13 +61,13 @@ function AdminLogin() {
         login(response.data.token);
         navigate('/admin/dashboard');
       } else {
-        setError('Réponse invalide du serveur');
+        setError(t('common.error'));
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else {
-        setError('Erreur lors de la connexion');
+        setError(t('admin.login.error'));
       }
     }
   }
@@ -110,10 +112,10 @@ function AdminLogin() {
                 backgroundClip: 'text',
               }}
             >
-              Connexion
+              {t('admin.login.title')}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
-              Accédez au tableau de bord administrateur
+              {t('admin.login.subtitle')}
             </Typography>
           </Box>
 
@@ -135,7 +137,7 @@ function AdminLogin() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Nom d'utilisateur"
+              label={t('admin.login.email')}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
@@ -152,7 +154,7 @@ function AdminLogin() {
 
             <TextField
               fullWidth
-              label="Mot de passe"
+              label={t('admin.login.password')}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -207,7 +209,7 @@ function AdminLogin() {
                 },
               }}
             >
-              Se connecter
+              {t('admin.login.loginButton')}
             </Button>
           </Box>
         </CardContent>

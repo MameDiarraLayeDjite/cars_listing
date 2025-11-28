@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -203,13 +204,14 @@ const FILTER_OPTIONS = {
 };
 
 function HomePage() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    make: 'Toutes',
-    location: 'Toutes',
+    make: t('filters.all'),
+    location: t('filters.all'),
     priceRange: [0, 1000000],
     sortBy: 'price-asc',
     searchQuery: '',
@@ -255,14 +257,13 @@ function HomePage() {
   // Filtrage des voitures
   const filteredCars = useMemo(() => {
     if (!cars || !Array.isArray(cars)) return [];
-    
+
     let result = [...cars];
 
-    if (filters.make && filters.make !== 'Toutes') {
+    if (filters.make && filters.make !== t('filters.all')) {
       result = result.filter(car => car.make === filters.make);
     }
-
-    if (filters.location && filters.location !== 'Toutes') {
+    if (filters.location && filters.location !== t('filters.all')) {
       result = result.filter(car => car.location === filters.location);
     }
 
@@ -296,10 +297,10 @@ function HomePage() {
   }, [filteredCars, pagination.page]);
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat('fr-FR', { 
-      style: 'currency', 
-      currency: 'EUR', 
-      maximumFractionDigits: 0 
+    new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0
     }).format(price);
 
   const handlePriceChange = (event, newValue) => {
@@ -308,8 +309,8 @@ function HomePage() {
 
   const clearFilters = () => {
     setFilters({
-      make: 'Toutes',
-      location: 'Toutes',
+      make: t('filters.all'),
+      location: t('filters.all'),
       priceRange: [0, 1000000],
       sortBy: 'price-asc',
       searchQuery: '',
@@ -346,9 +347,9 @@ function HomePage() {
         <Alert severity="error" variant="filled" sx={{ borderRadius: 4 }}>
           {error}
         </Alert>
-        <Button 
-          variant="contained" 
-          onClick={() => window.location.reload()} 
+        <Button
+          variant="contained"
+          onClick={() => window.location.reload()}
           sx={{ mt: 3 }}
         >
           Réessayer
@@ -371,7 +372,7 @@ function HomePage() {
                 style={{ textAlign: 'center' }}
               >
                 <Chip
-                  label="🚗 Nouveaux Arrivages"
+                  label={t('hero.newArrivals')}
                   sx={{
                     mb: 4,
                     fontWeight: 800,
@@ -399,10 +400,10 @@ function HomePage() {
                     WebkitTextFillColor: 'transparent',
                   }}
                 >
-                  L'Excellence Automobile
+                  {t('hero.title1')}
                   <br />
                   <Box component="span" sx={{ color: COLORS.primary, WebkitTextFillColor: 'initial' }}>
-                    À Votre Portée
+                    {t('hero.title2')}
                   </Box>
                 </Typography>
                 <Typography
@@ -417,7 +418,7 @@ function HomePage() {
                     fontSize: { xs: '1.1rem', md: '1.45rem' },
                   }}
                 >
-                  Découvrez notre collection exclusive de véhicules premium, rigoureusement inspectés pour vous offrir une expérience de conduite inégalée.
+                  {t('hero.subtitle')}
                 </Typography>
               </motion.div>
             </Container>
@@ -439,7 +440,7 @@ function HomePage() {
               <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
-                  placeholder="Rechercher..."
+                  placeholder={t('filters.search')}
                   value={filters.searchQuery}
                   onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
                   InputProps={{
@@ -448,9 +449,9 @@ function HomePage() {
                         <SearchIcon sx={{ color: COLORS.primary }} />
                       </InputAdornment>
                     ),
-                    sx: { 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx: {
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     },
                   }}
                   size="medium"
@@ -460,17 +461,17 @@ function HomePage() {
               {/* Marque */}
               <Grid item xs={6} md={2}>
                 <FormControl fullWidth size="medium">
-                  <InputLabel>Marque</InputLabel>
+                  <InputLabel>{t('filters.brand')}</InputLabel>
                   <Select
                     value={filters.make}
-                    label="Marque"
+                    label={t('filters.brand')}
                     onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
-                    sx={{ 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx={{
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     }}
                   >
-                    {FILTER_OPTIONS.make.map(m => (
+                    {[t('filters.all'), 'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Peugeot', 'Renault'].map(m => (
                       <MenuItem key={m} value={m}>{m}</MenuItem>
                     ))}
                   </Select>
@@ -480,17 +481,17 @@ function HomePage() {
               {/* Localisation */}
               <Grid item xs={6} md={2}>
                 <FormControl fullWidth size="medium">
-                  <InputLabel>Localisation</InputLabel>
+                  <InputLabel>{t('filters.location')}</InputLabel>
                   <Select
                     value={filters.location}
-                    label="Localisation"
+                    label={t('filters.location')}
                     onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    sx={{ 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx={{
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     }}
                   >
-                    {FILTER_OPTIONS.location.map(location => (
+                    {[t('filters.all'), 'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Bordeaux', 'Rennes'].map(location => (
                       <MenuItem key={location} value={location}>{location}</MenuItem>
                     ))}
                   </Select>
@@ -505,12 +506,12 @@ function HomePage() {
                   onClick={(e) => setPriceAnchorEl(e.currentTarget)}
                   startIcon={<EuroIcon />}
                   endIcon={
-                    <Badge 
+                    <Badge
                       badgeContent={
                         filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000 ? '!' : 0
-                      } 
-                      color="primary" 
-                      variant="dot" 
+                      }
+                      color="primary"
+                      variant="dot"
                     />
                   }
                   sx={{
@@ -523,7 +524,7 @@ function HomePage() {
                     textTransform: 'none',
                   }}
                 >
-                  Budget
+                  {t('filters.budget')}
                 </Button>
                 <Popover
                   open={openPrice}
@@ -531,18 +532,18 @@ function HomePage() {
                   onClose={() => setPriceAnchorEl(null)}
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                  PaperProps={{ 
-                    sx: { 
-                      p: 3, 
-                      width: 320, 
-                      borderRadius: 4, 
-                      mt: 1, 
-                      boxShadow: theme.shadows[10] 
-                    } 
+                  PaperProps={{
+                    sx: {
+                      p: 3,
+                      width: 320,
+                      borderRadius: 4,
+                      mt: 1,
+                      boxShadow: theme.shadows[10]
+                    }
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                    Fourchette de prix
+                    {t('filters.priceRange')}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
                     {formatPrice(filters.priceRange[0])} - {formatPrice(filters.priceRange[1])}
@@ -562,22 +563,28 @@ function HomePage() {
               {/* Tri */}
               <Grid item xs={6} md={2}>
                 <FormControl fullWidth size="medium">
-                  <InputLabel>Trier par</InputLabel>
+                  <InputLabel>{t('filters.sortBy')}</InputLabel>
                   <Select
                     value={filters.sortBy}
-                    label="Trier par"
+                    label={t('filters.sortBy')}
                     onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
                     startAdornment={
                       <InputAdornment position="start">
                         <SortIcon fontSize="small" />
                       </InputAdornment>
                     }
-                    sx={{ 
-                      borderRadius: 3, 
-                      bgcolor: alpha(theme.palette.background.paper, 0.5) 
+                    sx={{
+                      borderRadius: 3,
+                      bgcolor: alpha(theme.palette.background.paper, 0.5)
                     }}
                   >
-                    {FILTER_OPTIONS.sortBy.map(option => (
+                    {[
+                      { value: 'price-asc', label: t('filters.sortOptions.priceAsc') },
+                      { value: 'price-desc', label: t('filters.sortOptions.priceDesc') },
+                      { value: 'year-desc', label: t('filters.sortOptions.yearDesc') },
+                      { value: 'year-asc', label: t('filters.sortOptions.yearAsc') },
+                      { value: 'mileage-asc', label: t('filters.sortOptions.mileageAsc') },
+                    ].map(option => (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
                       </MenuItem>
@@ -591,17 +598,17 @@ function HomePage() {
                 <Button
                   color="error"
                   onClick={clearFilters}
-                  sx={{ 
-                    minWidth: 56, 
-                    height: 56, 
-                    borderRadius: 3, 
-                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}` 
+                  sx={{
+                    minWidth: 56,
+                    height: 56,
+                    borderRadius: 3,
+                    border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`
                   }}
                 >
                   <RestartAltIcon />
                 </Button>
                 <Chip
-                  label={`${filteredCars.length} Véhicules`}
+                  label={t('filters.vehiclesCount', { count: filteredCars.length })}
                   color="primary"
                   sx={{
                     fontWeight: 700,
@@ -618,7 +625,7 @@ function HomePage() {
         </motion.div>
 
         {/* Grille de voitures avec CSS Grid */}
-        <Box 
+        <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
@@ -645,10 +652,10 @@ function HomePage() {
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.4 }}
                     >
-                      <Link 
-                        to={`/cars/${car.id}`} 
-                        style={{ 
-                          textDecoration: 'none', 
+                      <Link
+                        to={`/cars/${car.id}`}
+                        style={{
+                          textDecoration: 'none',
                           color: 'inherit',
                           display: 'flex',
                           flexDirection: 'column',
@@ -657,10 +664,10 @@ function HomePage() {
                       >
                         {/* Image */}
                         <Box sx={{ position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-                          <CarImage 
+                          <CarImage
                             className="car-image"
-                            image={imageUrl} 
-                            title={`${car.make} ${car.model}`} 
+                            image={imageUrl}
+                            title={`${car.make} ${car.model}`}
                           />
                           <PriceBadge className="price-badge">
                             {formatPrice(car.price)}
@@ -752,7 +759,7 @@ function HomePage() {
                               },
                             }}
                           >
-                            Voir détails
+                            {t('car.viewDetails')}
                           </Button>
                         </CardContent>
                       </Link>
@@ -797,10 +804,10 @@ function HomePage() {
             <Typography color="text.secondary" mb={4} fontSize="1.1rem">
               Essayez de modifier vos filtres pour voir plus de résultats.
             </Typography>
-            <Button 
-              variant="contained" 
-              onClick={clearFilters} 
-              startIcon={<RestartAltIcon />} 
+            <Button
+              variant="contained"
+              onClick={clearFilters}
+              startIcon={<RestartAltIcon />}
               size="large"
             >
               Réinitialiser la recherche

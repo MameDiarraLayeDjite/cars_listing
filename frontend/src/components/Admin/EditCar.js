@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -50,6 +51,7 @@ const FormSection = styled(Box)(({ theme }) => ({
 function EditCar() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const theme = useTheme();
 
   const [form, setForm] = useState({
@@ -81,7 +83,7 @@ function EditCar() {
         setLoading(true);
         const response = await api.get(`/cars/${id}`);
         if (!response.data) {
-          setFetchError('Voiture introuvable');
+          setFetchError(t('car.details.notFound'));
           return;
         }
         const car = response.data;
@@ -103,13 +105,13 @@ function EditCar() {
           photos: Array.isArray(car.photos) && car.photos.length > 0 ? car.photos : [],
         });
       } catch {
-        setFetchError('Erreur lors du chargement des données');
+        setFetchError(t('common.errorLoadingCars'));
       } finally {
         setLoading(false);
       }
     }
     fetchCar();
-  }, [id]);
+  }, [id, t]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -239,7 +241,7 @@ function EditCar() {
       await api.put(`/cars/${id}`, carData);
       navigate('/admin/dashboard');
     } catch {
-      setErrors(['Erreur lors de la mise à jour de la voiture.']);
+      setErrors([t('admin.editCar.updateError')]);
     } finally {
       setSubmitting(false);
     }
@@ -265,7 +267,7 @@ function EditCar() {
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/admin/dashboard')}
         >
-          Retour au tableau de bord
+          {t('common.back')}
         </Button>
       </Container>
     );
@@ -288,7 +290,7 @@ function EditCar() {
           },
         }}
       >
-        Retour au tableau de bord
+        {t('common.back')}
       </Button>
 
       <DashboardCard>
@@ -310,7 +312,7 @@ function EditCar() {
                 backgroundClip: 'text',
               }}
             >
-              Modifier la voiture
+              {t('admin.editCar.title')}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
               Modifiez les informations du véhicule
@@ -333,13 +335,13 @@ function EditCar() {
             {/* Informations de base */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Informations de base
+                {t('admin.createCar.basicInfo')}
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Année"
+                    label={t('admin.createCar.year')}
                     name="year"
                     type="number"
                     value={form.year}
@@ -351,7 +353,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Marque"
+                    label={t('admin.createCar.make')}
                     name="make"
                     value={form.make}
                     onChange={handleChange}
@@ -361,7 +363,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Modèle"
+                    label={t('admin.createCar.model')}
                     name="model"
                     value={form.model}
                     onChange={handleChange}
@@ -384,13 +386,13 @@ function EditCar() {
             {/* Spécifications techniques */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Spécifications techniques
+                {t('admin.createCar.specifications')}
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Kilométrage"
+                    label={t('admin.createCar.mileage')}
                     name="mileage"
                     type="number"
                     value={form.mileage}
@@ -405,7 +407,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Transmission"
+                    label={t('admin.createCar.transmission')}
                     name="transmission"
                     value={form.transmission}
                     onChange={handleChange}
@@ -416,7 +418,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Type de carburant"
+                    label={t('admin.createCar.fuelType')}
                     name="fuel_type"
                     value={form.fuel_type}
                     onChange={handleChange}
@@ -427,7 +429,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Cylindres"
+                    label={t('admin.createCar.cylinders')}
                     name="cylinders"
                     type="number"
                     value={form.cylinders}
@@ -459,13 +461,13 @@ function EditCar() {
             {/* Localisation et prix */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Localisation et prix
+                {t('admin.createCar.pricing')} & {t('admin.createCar.location')}
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Ville"
+                    label={t('admin.createCar.location')}
                     name="location_city"
                     value={form.location_city}
                     onChange={handleChange}
@@ -485,7 +487,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Prix de vente"
+                    label={t('admin.createCar.salePrice')}
                     name="sale_price"
                     type="number"
                     value={form.sale_price}
@@ -500,7 +502,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Numéro de stock"
+                    label={t('admin.createCar.stockNumber')}
                     name="stock_number"
                     value={form.stock_number}
                     onChange={handleChange}
@@ -510,7 +512,7 @@ function EditCar() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="VIN"
+                    label={t('admin.createCar.vin')}
                     name="vin"
                     value={form.vin}
                     onChange={handleChange}
@@ -523,7 +525,7 @@ function EditCar() {
             {/* Photos */}
             <FormSection>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-                Photos
+                {t('admin.createCar.photos')}
               </Typography>
               <Button
                 variant="outlined"
@@ -543,7 +545,7 @@ function EditCar() {
                   },
                 }}
               >
-                {uploading ? 'Téléversement en cours...' : 'Ajouter des photos'}
+                {uploading ? t('common.loading') : t('admin.createCar.uploadPhotos')}
                 <input
                   type="file"
                   accept="image/*"
@@ -644,7 +646,7 @@ function EditCar() {
                   },
                 }}
               >
-                {submitting ? 'Mise à jour en cours...' : 'Mettre à jour'}
+                {submitting ? t('admin.editCar.updating') : t('admin.editCar.update')}
               </Button>
               <Button
                 variant="outlined"
@@ -664,7 +666,7 @@ function EditCar() {
                   },
                 }}
               >
-                Annuler
+                {t('admin.createCar.cancel')}
               </Button>
             </Stack>
           </Box>
