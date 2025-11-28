@@ -190,81 +190,84 @@ const SpecBadge = styled(Box)(({ theme }) => ({
   }
 }));
 
-// === Options de filtre ===
-const FILTER_OPTIONS = {
-  make: ['Toutes', 'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Peugeot', 'Renault'],
-  location: ['Toutes', 'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Bordeaux', 'Lille', 'Nantes', 'Strasbourg', 'Nice'],
-  sortBy: [
-    { value: 'price-asc', label: 'Prix croissant' },
-    { value: 'price-desc', label: 'Prix décroissant' },
-    { value: 'year-desc', label: 'Récentes d\'abord' },
-    { value: 'year-asc', label: 'Anciennes d\'abord' },
-    { value: 'mileage-asc', label: 'Kilométrage croissant' },
-  ],
-};
-
 function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    make: t('filters.all'),
-    location: t('filters.all'),
+    make: 'all',
     priceRange: [0, 1000000],
     sortBy: 'price-asc',
     searchQuery: '',
   });
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 100,
+    pageSize: 16,
     total: 0
   });
 
   const [priceAnchorEl, setPriceAnchorEl] = useState(null);
   const openPrice = Boolean(priceAnchorEl);
 
-  const CARS_PER_PAGE = 9;
+  const fetchCars = async (filters = {}, page = 1) => {
+    try {
+      setLoading(true);
+      const params = {
+        page,
+        limit: pagination.pageSize,
+        ...(filters.make && filters.make !== 'all' && { make: filters.make }),
+        minPrice: filters.priceRange?.[0] || 0,
+        maxPrice: filters.priceRange?.[1] || 1000000,
+        ...(filters.searchQuery && { search: filters.searchQuery }),
+        sortBy: filters.sortBy || 'price-asc'
+      };
 
-  // Chargement des voitures
+      const response = await api.get('/cars', { params });
+      
+      setCars(response.data.data || []);
+      setPagination(prev => ({
+        ...prev,
+        page,
+        total: response.data.pagination?.total || 0
+      }));
+    } catch (err) {
+      console.error('Error fetching cars:', err);
+      setError('Impossible de charger les véhicules. Veuillez réessayer.');
+      setCars([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Effet pour charger les données initiales
   useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get('/cars', {
-          params: {
-            page: pagination.page,
-            limit: pagination.limit
-          }
-        });
-        setCars(response.data.data || []);
-        setPagination(prev => ({
-          ...prev,
-          total: response.data.pagination?.total || 0
-        }));
-      } catch (err) {
-        console.error('Error fetching cars:', err);
-        setError('Impossible de charger les véhicules. Veuillez réessayer.');
-        setCars([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCars();
-  }, [pagination.page, pagination.limit]);
+    fetchCars(filters, 1);
+  }, []);
 
-  // Filtrage des voitures
+  // Effet pour gérer les changements de filtres avec debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCars(filters, 1);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [filters.make, filters.priceRange, filters.sortBy, filters.searchQuery]);
+
+  // Gestion de la recherche depuis le champ de recherche
+  const handleSearch = (e) => {
+    e?.preventDefault();
+    fetchCars(filters, 1);
+  };
+
   const filteredCars = useMemo(() => {
     if (!cars || !Array.isArray(cars)) return [];
 
     let result = [...cars];
 
-    if (filters.make && filters.make !== t('filters.all')) {
+    if (filters.make && filters.make !== 'all') {
       result = result.filter(car => car.make === filters.make);
-    }
-    if (filters.location && filters.location !== t('filters.all')) {
-      result = result.filter(car => car.location === filters.location);
     }
 
     result = result.filter(
@@ -274,7 +277,7 @@ function HomePage() {
     if (filters.searchQuery) {
       const q = filters.searchQuery.toLowerCase();
       result = result.filter(car =>
-        `${car.make} ${car.model} ${car.year} ${car.series || ''}`.toLowerCase().includes(q)
+        `${car.make} ${car.model} ${car.year} ${car.series || ''} ${car.location || ''} ${car.location_city || ''}`.toLowerCase().includes(q)
       );
     }
 
@@ -289,12 +292,9 @@ function HomePage() {
     return result;
   }, [cars, filters]);
 
-  // Pagination
-  const pageCount = Math.ceil(filteredCars.length / CARS_PER_PAGE);
-  const paginatedCars = useMemo(() => {
-    const startIndex = (pagination.page - 1) * CARS_PER_PAGE;
-    return filteredCars.slice(startIndex, startIndex + CARS_PER_PAGE);
-  }, [filteredCars, pagination.page]);
+  const handlePageChange = (event, newPage) => {
+    fetchCars(filters, newPage);
+  };
 
   const formatPrice = (price) =>
     new Intl.NumberFormat('fr-FR', {
@@ -308,20 +308,16 @@ function HomePage() {
   };
 
   const clearFilters = () => {
-    setFilters({
-      make: t('filters.all'),
-      location: t('filters.all'),
+    const newFilters = {
+      make: 'all',
       priceRange: [0, 1000000],
       sortBy: 'price-asc',
       searchQuery: '',
-    });
-    setPagination(prev => ({
-      ...prev,
-      page: 1
-    }));
+    };
+    setFilters(newFilters);
+    fetchCars(newFilters, 1);
   };
 
-  // Loading State
   if (loading) {
     return (
       <Box>
@@ -340,7 +336,6 @@ function HomePage() {
     );
   }
 
-  // Error State
   if (error) {
     return (
       <Container maxWidth="sm" sx={{ mt: 10 }}>
@@ -437,7 +432,7 @@ function HomePage() {
           <FilterBar elevation={0}>
             <Grid container spacing={2} alignItems="center">
               {/* Recherche */}
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.5}>
                 <TextField
                   fullWidth
                   placeholder={t('filters.search')}
@@ -459,10 +454,12 @@ function HomePage() {
               </Grid>
 
               {/* Marque */}
-              <Grid item xs={6} md={2}>
-                <FormControl fullWidth size="medium">
-                  <InputLabel>{t('filters.brand')}</InputLabel>
+              <Grid item xs={6} md={2.5}>
+                <FormControl fullWidth size="medium" key={`make-select-${i18n.language}`}>
+                  <InputLabel id="make-select-label">{t('filters.brand')}</InputLabel>
                   <Select
+                    labelId="make-select-label"
+                    id="make-select"
                     value={filters.make}
                     label={t('filters.brand')}
                     onChange={(e) => setFilters(prev => ({ ...prev, make: e.target.value }))}
@@ -471,28 +468,9 @@ function HomePage() {
                       bgcolor: alpha(theme.palette.background.paper, 0.5)
                     }}
                   >
-                    {[t('filters.all'), 'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Peugeot', 'Renault'].map(m => (
+                    <MenuItem value="all">{t('filters.all')}</MenuItem>
+                    {['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Peugeot', 'Renault'].map(m => (
                       <MenuItem key={m} value={m}>{m}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              {/* Localisation */}
-              <Grid item xs={6} md={2}>
-                <FormControl fullWidth size="medium">
-                  <InputLabel>{t('filters.location')}</InputLabel>
-                  <Select
-                    value={filters.location}
-                    label={t('filters.location')}
-                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    sx={{
-                      borderRadius: 3,
-                      bgcolor: alpha(theme.palette.background.paper, 0.5)
-                    }}
-                  >
-                    {[t('filters.all'), 'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Bordeaux', 'Rennes'].map(location => (
-                      <MenuItem key={location} value={location}>{location}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -562,9 +540,11 @@ function HomePage() {
 
               {/* Tri */}
               <Grid item xs={6} md={2}>
-                <FormControl fullWidth size="medium">
-                  <InputLabel>{t('filters.sortBy')}</InputLabel>
+                <FormControl fullWidth size="medium" key={`sort-select-${i18n.language}`}>
+                  <InputLabel id="sort-select-label">{t('filters.sortBy')}</InputLabel>
                   <Select
+                    labelId="sort-select-label"
+                    id="sort-select"
                     value={filters.sortBy}
                     label={t('filters.sortBy')}
                     onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
@@ -638,7 +618,7 @@ function HomePage() {
           }}
         >
           <AnimatePresence>
-            {paginatedCars.map((car, index) => {
+            {cars.map((car, index) => {
               const imageUrl = car.photos?.[0] ||
                 `https://source.unsplash.com/random/800x600/?${car.make}+${car.model}`;
 
@@ -772,12 +752,12 @@ function HomePage() {
         </Box>
 
         {/* Pagination */}
-        {pageCount > 1 && (
+        {Math.ceil(pagination.total / pagination.pageSize) > 1 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
             <Pagination
-              count={pageCount}
-              page={page}
-              onChange={(_, p) => setPage(p)}
+              count={Math.ceil(pagination.total / pagination.pageSize)}
+              page={pagination.page}
+              onChange={handlePageChange}
               size="large"
               color="primary"
               shape="rounded"
@@ -795,7 +775,7 @@ function HomePage() {
         )}
 
         {/* Empty State */}
-        {filteredCars.length === 0 && !loading && (
+        {cars.length === 0 && !loading && (
           <Box textAlign="center" py={12}>
             <DirectionsCarIcon sx={{ fontSize: 90, color: 'text.disabled', mb: 3, opacity: 0.4 }} />
             <Typography variant="h5" color="text.secondary" fontWeight={700} gutterBottom>
@@ -819,4 +799,4 @@ function HomePage() {
   );
 }
 
-export default HomePage
+export default HomePage;

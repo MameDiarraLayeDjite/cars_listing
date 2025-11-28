@@ -129,7 +129,7 @@ const Footer = () => {
                             <Box display="flex" gap={2}>
                                 <LocationOnIcon color="primary" fontSize="small" sx={{ mt: 0.5 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    Sicap Libere 4 Villa N°5181,
+                                    Sicap Liberté 4 Villa N°5181,
                                     Dakar Sénégal
                                 </Typography>
                             </Box>

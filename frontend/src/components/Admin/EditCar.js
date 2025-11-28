@@ -373,7 +373,7 @@ function EditCar() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Série"
+                    label={t('admin.createCar.series')}
                     name="series"
                     value={form.series}
                     onChange={handleChange}
