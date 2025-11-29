@@ -6,7 +6,9 @@
         "adminLogin": "Connexion Admin",
         "adminDashboard": "Dashboard Admin",
         "logout": "Déconnexion",
-        "brandName": "SarayaAutoSales"
+        "brandName": "SarayaAutoSales",
+        "darkMode": "Mode sombre",
+        "lightMode": "Mode clair"
     },
     "hero": {
         "newArrivals": "🚗 Nouveaux Arrivages",

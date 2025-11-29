@@ -288,9 +288,9 @@ function CarDetails() {
         <Button
           variant="contained"
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')} 
+          onClick={() => navigate('/')}
         >
-          {t('common.backToHome')} 
+          {t('common.backToHome')}
         </Button>
       </Container>
     );
@@ -304,7 +304,7 @@ function CarDetails() {
       {/* Back Button */}
       <Button
         startIcon={<ArrowBackIcon />}
-        onClick={() => navigate(-1)} 
+        onClick={() => navigate(-1)}
         sx={{
           mb: 4,
           fontWeight: 600,
@@ -316,12 +316,49 @@ function CarDetails() {
           },
         }}
       >
-      {t('common.back')} 
+        {t('common.back')}
       </Button>
 
-      <Grid container spacing={4}>
-        {/* Left Side: Image Gallery */}
-        <Grid item xs={12} lg={7}>
+      {/* Car Title - Full Name at Top */}
+      <Fade in={true} timeout={600}>
+        <Box sx={{ mb: 3 }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{
+              fontFamily: 'Outfit, sans-serif',
+              fontWeight: 700,
+              background: (theme) =>
+                theme.palette.mode === 'light'
+                  ? 'linear-gradient(135deg, #FF6B35 0%, #FF9F1C 100%)'
+                  : 'linear-gradient(135deg, #FF8C61 0%, #FFB84D 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              mb: 1.5,
+            }}
+          >
+            {fullName}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Chip
+              label={car.mileage === 0 ? t('car.condition.new') : t('car.condition.used')}
+              color={car.mileage === 0 ? 'primary' : 'secondary'}
+              sx={{ fontWeight: 600, fontSize: '0.85rem' }}
+            />
+            <Chip
+              icon={<DirectionsCarIcon />}
+              label={car.year}
+              variant="outlined"
+              sx={{ fontWeight: 600, fontSize: '0.85rem' }}
+            />
+          </Box>
+        </Box>
+      </Fade>
+
+      <Grid container spacing={4} direction="column">
+        {/* Image Gallery */}
+        <Grid item xs={12}>
           <Fade in={true} timeout={800}>
             <Box sx={{ position: 'sticky', top: 20 }}>
               <ImageContainer onClick={() => setFullscreenOpen(true)}>
@@ -408,50 +445,18 @@ function CarDetails() {
           </Fade>
         </Grid>
 
-        {/* Right Side: All Details */}
-        <Grid item xs={12} lg={5}>
-          <Stack spacing={3}>
-            {/* Title & Condition Card */}
-            <InfoCard>
-              <CardContent sx={{ p: 3 }}>
-                <Typography
-                  variant="h4"
-                  component="h1"
-                  gutterBottom
-                  sx={{
-                    fontFamily: 'Outfit, sans-serif',
-                    fontWeight: 700,
-                    background: (theme) =>
-                      theme.palette.mode === 'light'
-                        ? 'linear-gradient(135deg, #FF6B35 0%, #FF9F1C 100%)'
-                        : 'linear-gradient(135deg, #FF8C61 0%, #FFB84D 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    mb: 2,
-                  }}
-                >
-                  {fullName}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  <Chip
-                    label={car.condition === 'new' ? t('car.condition.new') : t('car.condition.used')}
-                    color={car.condition === 'new' ? 'primary' : 'secondary'}
-                    sx={{ fontWeight: 600, fontSize: '0.9rem' }}
-                  />
-                  <Chip
-                    icon={<DirectionsCarIcon />}
-                    label={car.year}
-                    variant="outlined"
-                    sx={{ fontWeight: 600, fontSize: '0.9rem' }}
-                  />
-                </Box>
-              </CardContent>
-            </InfoCard>
-
-            {/* Price Card - Prominent */}
-            <InfoCard>
-              <CardContent sx={{ p: 0 }}>
+        {/* Price and Details Cards Side by Side */}
+        <Grid item xs={12}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gap: 4,
+            }}
+          >
+            {/* Price Card - Left Column */}
+            <InfoCard sx={{ display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ p: 0, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                 <Box
                   sx={{
                     background: (theme) =>
@@ -461,6 +466,10 @@ function CarDetails() {
                     borderRadius: '20px',
                     p: 4,
                     textAlign: 'center',
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
                     color: 'white',
                     position: 'relative',
                     overflow: 'hidden',
@@ -565,9 +574,9 @@ function CarDetails() {
               </CardContent>
             </InfoCard>
 
-            {/* Details Tabs Card */}
-            <InfoCard>
-              <CardContent sx={{ p: 3 }}>
+            {/* Details Tabs Card - Right Column */}
+            <InfoCard sx={{ display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
                   <Tabs value={tabValue} onChange={handleTabChange} aria-label="car details tabs">
                     <StyledTab label={t('car.details.info')} />
@@ -707,7 +716,7 @@ function CarDetails() {
                 </TabPanel>
               </CardContent>
             </InfoCard>
-          </Stack>
+          </Box>
         </Grid>
       </Grid>
 

@@ -78,45 +78,118 @@ const Navbar = () => {
   ];
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        {t('nav.brandName')}
-      </Typography>
-      <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.label} disablePadding>
+    <Box sx={{ textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box>
+        {/* <Typography variant="h6" sx={{ my: 2 }}>
+          {t('nav.brandName')}
+        </Typography>
+        <Divider /> */}
+        <List>
+          {menuItems.map((item) => (
+            <ListItem key={item.label} disablePadding>
+              <Button
+                component={Link}
+                to={item.path}
+                fullWidth
+                onClick={handleDrawerToggle}
+                sx={{
+                  color: 'text.primary',
+                  justifyContent: 'flex-start',
+                  px: 3,
+                }}
+              >
+                <ListItemText primary={item.label} />
+              </Button>
+            </ListItem>
+          ))}
+          {/* Language Switcher in Mobile Menu */}
+          <ListItem disablePadding>
+            <Box sx={{ width: '100%', px: 3, py: 1 }}>
+              <LanguageSwitcher />
+            </Box>
+          </ListItem>
+          {/* Theme Toggle in Mobile Menu */}
+          <ListItem disablePadding>
             <Button
-              component={Link}
-              to={item.path}
               fullWidth
+              onClick={toggleTheme}
               sx={{
                 color: 'text.primary',
                 justifyContent: 'flex-start',
                 px: 3,
               }}
             >
-              <ListItemText primary={item.label} />
+              <ListItemText primary={mode === 'light' ? t('nav.darkMode') : t('nav.lightMode')} />
+              {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
             </Button>
           </ListItem>
-        ))}
-        {!currentUser && (
-          <ListItem disablePadding>
-            <Button
-              component={Link}
-              to="/admin/login"
-              fullWidth
-              sx={{
-                color: 'primary.main',
-                justifyContent: 'flex-start',
-                px: 3,
-              }}
-            >
-              <ListItemText primary={t('nav.adminLogin')} />
-            </Button>
-          </ListItem>
-        )}
-      </List>
+          {currentUser ? (
+            <>
+              <Divider sx={{ my: 1 }} />
+              <ListItem disablePadding>
+                <Typography variant="subtitle2" sx={{ px: 3, py: 1, width: '100%', textAlign: 'left' }}>
+                  {currentUser.email}
+                </Typography>
+              </ListItem>
+              {currentUser.role === 'admin' && (
+                <ListItem disablePadding>
+                  <Button
+                    component={Link}
+                    to="/admin/dashboard"
+                    fullWidth
+                    onClick={handleDrawerToggle}
+                    sx={{
+                      color: 'text.primary',
+                      justifyContent: 'flex-start',
+                      px: 3,
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 40 }}>
+                      <DashboardIcon />
+                    </ListItemIcon>
+                    <ListItemText>{t('nav.adminDashboard')}</ListItemText>
+                  </Button>
+                </ListItem>
+              )}
+              <ListItem disablePadding>
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    handleDrawerToggle();
+                    handleLogout();
+                  }}
+                  sx={{
+                    color: 'error.main',
+                    justifyContent: 'flex-start',
+                    px: 3,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <ExitToAppIcon />
+                  </ListItemIcon>
+                  <ListItemText>{t('nav.logout')}</ListItemText>
+                </Button>
+              </ListItem>
+            </>
+          ) : (
+            <ListItem disablePadding>
+              <Button
+                component={Link}
+                to="/admin/login"
+                fullWidth
+                onClick={handleDrawerToggle}
+                sx={{
+                  color: 'primary.main',
+                  justifyContent: 'flex-start',
+                  px: 3,
+                }}
+              >
+                <ListItemText primary={t('nav.adminLogin')} />
+              </Button>
+            </ListItem>
+          )}
+        </List>
+      </Box>
     </Box>
   );
 
