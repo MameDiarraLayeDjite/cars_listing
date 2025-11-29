@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCurrency from '../../hooks/useCurrency';
 import {
   Box,
   Card,
@@ -192,6 +193,7 @@ const SpecBadge = styled(Box)(({ theme }) => ({
 
 function HomePage() {
   const { t, i18n } = useTranslation();
+  const currency = useCurrency();
   const theme = useTheme();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -225,7 +227,7 @@ function HomePage() {
       };
 
       const response = await api.get('/cars', { params });
-      
+
       setCars(response.data.data || []);
       setPagination(prev => ({
         ...prev,
@@ -251,7 +253,7 @@ function HomePage() {
     const timer = setTimeout(() => {
       fetchCars(filters, 1);
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [filters.make, filters.priceRange, filters.sortBy, filters.searchQuery]);
 
@@ -295,13 +297,6 @@ function HomePage() {
   const handlePageChange = (event, newPage) => {
     fetchCars(filters, newPage);
   };
-
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    }).format(price);
 
   const handlePriceChange = (event, newValue) => {
     setFilters(prev => ({ ...prev, priceRange: newValue }));
@@ -524,7 +519,7 @@ function HomePage() {
                     {t('filters.priceRange')}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
-                    {formatPrice(filters.priceRange[0])} - {formatPrice(filters.priceRange[1])}
+                    {currency.format(filters.priceRange[0])} - {currency.format(filters.priceRange[1])}
                   </Typography>
                   <Slider
                     value={filters.priceRange}
@@ -650,7 +645,7 @@ function HomePage() {
                             title={`${car.make} ${car.model}`}
                           />
                           <PriceBadge className="price-badge">
-                            {formatPrice(car.price)}
+                            {currency.format(car.price)}
                           </PriceBadge>
                           <Box
                             sx={{

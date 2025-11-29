@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCurrency from '../../hooks/useCurrency';
 import {
   Box,
   Container,
@@ -52,6 +53,7 @@ function EditCar() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const currency = useCurrency();
   const theme = useTheme();
 
   const [form, setForm] = useState({
@@ -95,7 +97,7 @@ function EditCar() {
           mileage: car.mileage.toString(),
           location_city: car.location_city,
           location_branch: car.location_branch,
-          sale_price: car.sale_price.toString(),
+          sale_price: currency.convert(car.sale_price).toString(),
           stock_number: car.stock_number,
           vin: car.vin,
           transmission: car.transmission,
@@ -229,7 +231,7 @@ function EditCar() {
         mileage: parseInt(form.mileage, 10),
         location_city: form.location_city.trim(),
         location_branch: form.location_branch.trim(),
-        sale_price: parseFloat(form.sale_price),
+        sale_price: currency.toEur(parseFloat(form.sale_price)),
         stock_number: form.stock_number.trim(),
         vin: form.vin.trim(),
         transmission: form.transmission.trim(),
@@ -495,7 +497,7 @@ function EditCar() {
                     required
                     inputProps={{ min: 0, step: 0.01 }}
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">€</InputAdornment>,
+                      endAdornment: <InputAdornment position="end">{currency.symbol}</InputAdornment>,
                     }}
                   />
                 </Grid>

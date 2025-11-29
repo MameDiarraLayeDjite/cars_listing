@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCurrency from '../../hooks/useCurrency';
 import {
   Box,
   Container,
@@ -224,6 +225,7 @@ function CarDetails() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -247,17 +249,11 @@ function CarDetails() {
     fetchCar();
   }, [id]);
 
+
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
 
   if (loading) {
     return (
@@ -498,7 +494,7 @@ function CarDetails() {
                       mb: 3,
                     }}
                   >
-                    {formatPrice(car.sale_price || car.price)}
+                    {currency.format(car.sale_price || car.price)}
                   </Typography>
 
                   <Stack spacing={2}>

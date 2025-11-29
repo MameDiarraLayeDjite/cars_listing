@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCurrency from '../../hooks/useCurrency';
 import {
   Box,
   Container,
@@ -118,6 +119,7 @@ TablePaginationActions.propTypes = {
 
 function AdminDashboard() {
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [cars, setCars] = useState([]);
   const [searchName, setSearchName] = useState('');
   const [searchVin, setSearchVin] = useState('');
@@ -223,13 +225,7 @@ function AdminDashboard() {
     }
   };
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
+
 
   if (loading) {
     return (
@@ -469,7 +465,7 @@ function AdminDashboard() {
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                          {formatPrice(car.sale_price || car.price)}
+                          {currency.format(car.sale_price || car.price)}
                         </Typography>
                       </TableCell>
                       <TableCell>

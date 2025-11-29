@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCurrency from '../../hooks/useCurrency';
 import {
     Box,
     Container,
@@ -79,6 +80,7 @@ const NavButton = styled(IconButton)(({ theme }) => ({
 
 function AdminCarDetails() {
     const { t } = useTranslation();
+    const currency = useCurrency();
     const { id } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -112,13 +114,7 @@ function AdminCarDetails() {
         setCurrentPhotoIndex((idx) => (idx === photos.length - 1 ? 0 : idx + 1));
     };
 
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('fr-FR', {
-            style: 'currency',
-            currency: 'EUR',
-            maximumFractionDigits: 0
-        }).format(price);
-    };
+
 
     const handleDeleteClick = () => {
         setDeleteModalOpen(true);
@@ -431,7 +427,7 @@ function AdminCarDetails() {
                                     fontWeight: 800,
                                 }}
                             >
-                                {formatPrice(car.sale_price || car.price)}
+                                {currency.format(car.sale_price || car.price)}
                             </Typography>
                         </Box>
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCurrency from '../../hooks/useCurrency';
 import {
   Box,
   Container,
@@ -67,6 +68,7 @@ const initialFormState = {
 
 function CreateCar() {
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -190,7 +192,7 @@ function CreateCar() {
         mileage: parseInt(form.mileage, 10),
         location_city: form.location_city.trim(),
         location_branch: form.location_branch.trim(),
-        sale_price: parseFloat(form.sale_price),
+        sale_price: currency.toEur(parseFloat(form.sale_price)),
         stock_number: form.stock_number.trim(),
         vin: form.vin.trim(),
         transmission: form.transmission.trim(),
@@ -430,7 +432,7 @@ function CreateCar() {
                     required
                     inputProps={{ min: 0, step: 0.01 }}
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">€</InputAdornment>,
+                      endAdornment: <InputAdornment position="end">{currency.symbol}</InputAdornment>,
                     }}
                   />
                 </Grid>
